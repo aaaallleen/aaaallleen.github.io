@@ -8,7 +8,7 @@ export type HeroLayout = 'a' | 'b';
 
 export const site = {
   name: 'Allen Lu',
-  brand: 'allenlu.dev',
+  brand: 'aaaallleen.github.io',
   year: 2026,
   email: 'chiaen119@gmail.com',
   location: 'San Diego, CA',
@@ -51,7 +51,7 @@ export const site = {
 
   contacts: [
     { k: 'EMAIL', v: 'chiaen119@gmail.com', href: 'mailto:chiaen119@gmail.com' },
-    { k: 'GITHUB', v: 'github.com/allenlu', href: 'https://github.com/allenlu' },
+    { k: 'GITHUB', v: 'github.com/aaaallleen', href: 'https://github.com/aaaallleen' },
     { k: 'LINKEDIN', v: 'linkedin.com/in/allenlu', href: 'https://linkedin.com/in/allenlu' },
   ],
 };

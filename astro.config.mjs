@@ -7,9 +7,9 @@ import { satteriKatex } from './src/lib/satteri-katex.mjs';
 
 // `site` and `base` are injected by the GitHub Pages workflow
 // (.github/workflows/deploy.yml). Locally they fall back to a root deploy.
-//   SITE_URL  -> canonical origin, e.g. https://allenlu.github.io or https://allenlu.dev
+//   SITE_URL  -> canonical origin, e.g. https://aaaallleen.github.io or a custom domain
 //   BASE_PATH -> "/" for a user site or custom domain, "/<repo>/" for a project site
-const site = process.env.SITE_URL ?? 'https://allenlu.dev';
+const site = process.env.SITE_URL ?? 'https://aaaallleen.github.io';
 const base = process.env.BASE_PATH ?? '/';
 
 export default defineConfig({

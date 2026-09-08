@@ -1,4 +1,4 @@
-# allenlu.dev — personal site
+# aaaallleen.github.io — personal site
 
 A static personal site built with [Astro](https://astro.build) and deployed to GitHub Pages.
 The visual design is a retro desktop window (menu bar, title bar, sidebar, status bar) with a
