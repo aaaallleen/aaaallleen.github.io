@@ -1,0 +1,54 @@
+---
+import Desktop from '../layouts/Desktop.astro';
+import ImageSlot from '../components/ImageSlot.astro';
+import { projects } from '../data/projects';
+---
+<Desktop section="projects" description="Projects by Allen Lu.">
+  <div class="page">
+    <h1 class="section-title tight">PROJECTS</h1>
+    <p class="intro">Placeholder cards — drop an image on any tile and replace the copy when you send me the real projects.</p>
+
+    <ul class="grid">
+      {projects.map((p) => {
+        const Tag = p.href ? 'a' : 'div';
+        return (
+          <li>
+            <Tag class="card" href={p.href}>
+              <div class="slot">
+                <ImageSlot src={p.image} alt={p.alt ?? p.title} placeholder="Drop an image" />
+              </div>
+              <div class="meta">
+                <div class="px tag">{p.tag}</div>
+                <h2 class="title">{p.title}</h2>
+                <p class="desc">{p.description}</p>
+              </div>
+            </Tag>
+          </li>
+        );
+      })}
+    </ul>
+  </div>
+</Desktop>
+
+<style>
+  .page { padding: var(--pad-y-page) var(--pad-x); }
+  .tight { margin-bottom: 8px; }
+  .intro { font-size: 13px; color: var(--ink-2); margin: 0 0 28px; max-width: 60ch; }
+  .grid {
+    list-style: none; margin: 0; padding: 0;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 16px;
+  }
+  .card {
+    display: block; height: 100%;
+    background: var(--chrome);
+    border: 1px solid var(--line);
+    box-shadow: var(--drop);
+    padding: 7px;
+    color: inherit; text-decoration: none;
+  }
+  .slot { position: relative; width: 100%; aspect-ratio: 16/10; box-shadow: var(--bev-in); }
+  .meta { padding: 11px 6px 6px; }
+  .tag { font-size: 9px; color: var(--ink-3); margin-bottom: 6px; }
+  .title { font-size: 13px; font-weight: 700; line-height: 1.35; margin: 0; }
+  .desc { font-size: 12px; color: var(--ink-2); line-height: 1.55; margin: 0; padding-top: 5px; }
+</style>

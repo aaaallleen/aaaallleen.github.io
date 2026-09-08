@@ -1,0 +1,94 @@
+---
+/**
+ * The desktop behind the window, visible whenever the window is minimized or
+ * closed: the site as an app icon (opens / restores the one window) and the CV
+ * as a file (opens the CV page). Centered on screen, like a tidy desktop.
+ */
+import { site } from '../site.config';
+import { url } from '../lib/url';
+---
+<div class="desktop" data-desktop>
+  <div class="icons">
+  <button class="icon" type="button" data-icon="app" data-href={url('/')} aria-pressed="false" aria-label={`${site.brand} — reopen window`}>
+    <span class="art" aria-hidden="true">
+      <svg viewBox="0 0 48 48" width="48" height="48">
+        <rect x="3.5" y="6.5" width="41" height="35" fill="var(--win)" stroke="var(--ink)" />
+        <rect x="3.5" y="6.5" width="41" height="8" fill="var(--title-b)" stroke="var(--ink)" />
+        <rect x="6.5" y="9" width="3" height="3" fill="#FF5F57" />
+        <rect x="11" y="9" width="3" height="3" fill="#FEBC2E" />
+        <rect x="15.5" y="9" width="3" height="3" fill="#28C840" />
+        <rect x="3.5" y="14.5" width="12" height="27" fill="var(--panel)" stroke="var(--ink)" />
+        <rect x="6" y="19" width="7" height="2" fill="var(--sel)" />
+        <rect x="6" y="24" width="7" height="1.5" fill="var(--ink-3)" />
+        <rect x="6" y="28" width="7" height="1.5" fill="var(--ink-3)" />
+        <rect x="19" y="20" width="14" height="4" fill="var(--ink)" />
+        <rect x="19" y="27" width="21" height="1.5" fill="var(--ink-3)" />
+        <rect x="19" y="31" width="18" height="1.5" fill="var(--ink-3)" />
+        <rect x="19" y="35" width="20" height="1.5" fill="var(--ink-3)" />
+      </svg>
+    </span>
+    <span class="label">{site.brand}</span>
+  </button>
+
+  <button class="icon" type="button" data-icon="file" data-href={url('/cv/')} aria-pressed="false" aria-label={`${site.cv.label} — open`}>
+    <span class="art" aria-hidden="true">
+      <svg viewBox="0 0 48 48" width="48" height="48">
+        <path d="M9.5 3.5h20l10 10v31h-30z" fill="var(--win)" stroke="var(--ink)" />
+        <path d="M29.5 3.5v10h10" fill="var(--panel)" stroke="var(--ink)" />
+        <rect x="14" y="19" width="18" height="1.5" fill="var(--ink-3)" />
+        <rect x="14" y="23" width="20" height="1.5" fill="var(--ink-3)" />
+        <rect x="14" y="27" width="16" height="1.5" fill="var(--ink-3)" />
+        <rect x="12.5" y="32.5" width="24" height="9" fill="var(--sel)" stroke="var(--ink)" />
+        <text x="24.5" y="39.5" text-anchor="middle" font-family="Silkscreen, monospace" font-size="6.5" fill="#fff">PDF</text>
+      </svg>
+    </span>
+    <span class="label">{site.cv.label}</span>
+  </button>
+  </div>
+
+  <p class="px hint" aria-hidden="true">
+    <span class="hint-fine">Double-click to open</span>
+    <span class="hint-coarse">Tap to open</span>
+  </p>
+</div>
+
+<style>
+  .desktop {
+    position: fixed; inset: 26px 0 0 0; z-index: 20;
+    display: none;
+    flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+    padding-bottom: 14vh; /* sit a little above true centre so the dock has room */
+    animation: desk-in .22s ease-out;
+  }
+  :global(body[data-window="closed"]) .desktop,
+  :global(body[data-window="minimized"]) .desktop { display: flex; }
+  @keyframes desk-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .icons { display: flex; align-items: flex-start; gap: 28px; }
+
+  .icon {
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    width: 96px; padding: 6px 4px;
+    background: none; border: 0;
+    cursor: default;
+    appearance: none;
+    color: var(--ink);
+  }
+  .art { display: block; filter: drop-shadow(2px 2px 0 rgba(0,0,0,.25)); }
+  .label {
+    font-size: 11px; line-height: 1.3;
+    padding: 1px 6px;
+    background: var(--win);
+    border: 1px solid var(--line);
+    color: var(--ink);
+  }
+  .icon[aria-pressed="true"] .label { background: var(--sel); color: var(--sel-ink); border-color: var(--sel); }
+  .icon[aria-pressed="true"] .art { filter: drop-shadow(2px 2px 0 rgba(0,0,0,.25)) brightness(.78); }
+  .icon:focus-visible { outline: 2px solid var(--sel-ink); outline-offset: 2px; }
+
+  .hint { margin: 4px 0 0; font-size: 9px; color: var(--ink); opacity: .7; }
+  .hint-coarse { display: none; }
+  @media (pointer: coarse) {
+    .hint-fine { display: none; }
+    .hint-coarse { display: inline; }
+  }
+</style>

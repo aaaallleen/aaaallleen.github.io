@@ -1,0 +1,124 @@
+/* ---------------------------------------------------------------------------
+   Design tokens — lifted verbatim from the Claude Design mockup.
+   Day palette on :root, night palette on [data-theme="night"] (set on <html>).
+   --------------------------------------------------------------------------- */
+:root {
+  --desk-a: #7E9BB8; --desk-b: #8CA7C1;
+  --chrome: #DCDCDC; --chrome-2: #C6C6C6; --win: #F5F5F5; --panel: #EDEDED;
+  --ink: #1A1A1A; --ink-2: #4C4C4C; --ink-3: #7A7A7A;
+  --line: #9C9C9C; --line-soft: #C8C8C8;
+  --sel: #2C5CA8; --sel-ink: #FFFFFF; --accent: #2C5CA8;
+  --title-a: #F0F0F0; --title-b: #C4C4C4;
+  --bev-out: inset 1px 1px 0 rgba(255,255,255,.95), inset -1px -1px 0 rgba(0,0,0,.26);
+  --bev-in: inset 1px 1px 0 rgba(0,0,0,.30), inset -1px -1px 0 rgba(255,255,255,.85);
+  --drop: 3px 3px 0 rgba(0,0,0,.22);
+
+  --font-ui: Verdana, Geneva, Tahoma, sans-serif;
+  --font-px: Silkscreen, monospace;
+  --font-mono: ui-monospace, Menlo, Consolas, monospace;
+
+  /* shared horizontal rhythm for content sections */
+  --pad-x: clamp(20px, 4vw, 52px);
+  --pad-y: clamp(28px, 4vw, 52px);
+  --pad-y-page: clamp(26px, 4vw, 48px);
+
+  color-scheme: light;
+}
+
+[data-theme="night"] {
+  --desk-a: #23282E; --desk-b: #2B3138;
+  --chrome: #4B5159; --chrome-2: #3B4148; --win: #2C3138; --panel: #343A41;
+  --ink: #EDEEF0; --ink-2: #BEC4CB; --ink-3: #8C939B;
+  --line: #1C2025; --line-soft: #3E444B;
+  --sel: #35608F; --sel-ink: #FFFFFF; --accent: #7FB3E8;
+  --title-a: #5A6169; --title-b: #3A4047;
+  --bev-out: inset 1px 1px 0 rgba(255,255,255,.16), inset -1px -1px 0 rgba(0,0,0,.5);
+  --bev-in: inset 1px 1px 0 rgba(0,0,0,.55), inset -1px -1px 0 rgba(255,255,255,.12);
+  --drop: 3px 3px 0 rgba(0,0,0,.4);
+  color-scheme: dark;
+}
+
+@keyframes al-blink { 0%, 100% { opacity: 1 } 50% { opacity: .3 } }
+
+/* ---------------------------------------------------------------------------
+   Base
+   --------------------------------------------------------------------------- */
+*, *::before, *::after { box-sizing: border-box; }
+
+html { background: var(--desk-a); }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  padding-bottom: 64px;
+  font-family: var(--font-ui);
+  color: var(--ink);
+  background: var(--desk-a);
+  background-image: repeating-linear-gradient(0deg, var(--desk-a) 0 3px, var(--desk-b) 3px 6px);
+  -webkit-font-smoothing: antialiased;
+}
+
+[hidden] { display: none !important; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+img { display: block; max-width: 100%; }
+
+html.is-zoomed body { padding-bottom: 0; }
+
+/* Pixel-font utility used for chrome, labels and eyebrows */
+.px { font-family: var(--font-px); }
+
+/* Section heading: "ABOUT ME", "RECENT WRITING", ... */
+.section-title {
+  font-family: var(--font-px);
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0 0 22px;
+}
+
+/* ---------------------------------------------------------------------------
+   Buttons
+   --------------------------------------------------------------------------- */
+.btn {
+  display: inline-block;
+  padding: 8px 16px;
+  border: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: normal;
+  text-decoration: none;
+  cursor: pointer;
+  appearance: none;
+}
+.btn-primary {
+  background: var(--sel);
+  color: var(--sel-ink);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,.3);
+}
+.btn-chrome {
+  background: var(--chrome);
+  color: var(--ink);
+  box-shadow: var(--bev-out);
+}
+
+/* Toolbar / small pixel buttons: "< Back", "Home", "Download CV" */
+.tb {
+  display: inline-block;
+  padding: 4px 11px;
+  background: var(--chrome-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: var(--bev-out);
+  font-family: var(--font-px);
+  font-size: 10px;
+  line-height: normal;
+  text-decoration: none;
+  cursor: pointer;
+  appearance: none;
+}
+
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
+}

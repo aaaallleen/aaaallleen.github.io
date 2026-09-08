@@ -1,0 +1,187 @@
+---
+/**
+ * The retro desktop shell: sticky menu bar, one window with title bar,
+ * toolbar, sidebar + content, and a status bar. Every page renders inside it.
+ */
+import '../styles/global.css';
+import MenuBar from '../components/MenuBar.astro';
+import Toolbar from '../components/Toolbar.astro';
+import Sidebar from '../components/Sidebar.astro';
+import Dock from '../components/Dock.astro';
+import DesktopIcons from '../components/DesktopIcons.astro';
+import AboutDialog from '../components/AboutDialog.astro';
+import { site } from '../site.config';
+import { titles, type SectionKey } from '../data/nav';
+import { url } from '../lib/url';
+
+interface Props {
+  section: SectionKey;
+  /** Text in the window's title bar. Defaults to the section title. */
+  windowTitle?: string;
+  /** Browser tab title. Defaults to "<window title> · Allen Lu". */
+  tabTitle?: string;
+  description?: string;
+  /** Left side of the status bar. Defaults to the mockup's "<title> — <email>". */
+  status?: string;
+}
+
+const { section, windowTitle = titles[section], tabTitle, description = site.description, status } = Astro.props;
+const statusText = status ?? `${section === 'home' ? '7 items' : titles[section]} — ${site.email}`;
+const pageTitle = tabTitle ?? (section === 'home' ? `${site.name} — ML Infrastructure Engineer` : `${windowTitle} · ${site.name}`);
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en" data-theme={site.defaultTheme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" />
+    <script is:inline>
+      // Apply the saved theme before first paint so there is no flash.
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light' || t === 'night') document.documentElement.setAttribute('data-theme', t);
+          if (localStorage.getItem('zoom') === '1') document.documentElement.classList.add('is-zoomed');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body data-window="open">
+    <MenuBar />
+
+    <div class="desk">
+      <div class="window" data-window-el tabindex="-1">
+        <div class="titlebar">
+          <div class="lights">
+            <button class="light close" type="button" data-action="close" aria-label="Close window"><i class="glyph sq"></i></button>
+            <button class="light min" type="button" data-action="minimize" aria-label="Minimize window to the dock"><i class="glyph dash"></i></button>
+            <button class="light zoom" type="button" data-action="zoom" aria-label="Toggle fill screen"><i class="glyph corner"></i></button>
+          </div>
+          <div class="rail">
+            <span class="rule"></span>
+            <span class="px title">{windowTitle}</span>
+            <span class="rule"></span>
+          </div>
+          <div class="spacer"></div>
+        </div>
+
+        <Toolbar />
+
+        <div class="body">
+          <Sidebar current={section} />
+          <main class="content" id="main">
+            <slot />
+          </main>
+        </div>
+
+        <footer class="statusbar">
+          <span class="px status">{statusText}</span>
+          <span class="px sig">{site.name} &middot; {site.year}</span>
+        </footer>
+      </div>
+    </div>
+
+    <Dock windowTitle={windowTitle} />
+    <DesktopIcons />
+    <AboutDialog />
+
+    <script>
+      import '../scripts/desktop';
+    </script>
+  </body>
+</html>
+
+<style>
+  .desk {
+    max-width: 1160px;
+    margin: 0 auto;
+    padding: clamp(18px, 4vw, 44px) clamp(10px, 3vw, 32px) 0;
+  }
+  .window {
+    background: var(--chrome);
+    border: 1px solid var(--line);
+    box-shadow: var(--drop);
+    outline: none;
+  }
+  .window[hidden] { display: none; }
+
+  /* Zoom (green light): the window fills the viewport. */
+  :global(html.is-zoomed) .desk { max-width: none; padding: 0; }
+  :global(html.is-zoomed) .window {
+    display: flex; flex-direction: column;
+    min-height: calc(100vh - 26px);
+    border-left: 0; border-right: 0;
+    box-shadow: none;
+  }
+  :global(html.is-zoomed) .window[hidden] { display: none; }
+  :global(html.is-zoomed) .body { flex: 1; }
+
+  /* Title bar */
+  .titlebar {
+    display: flex; align-items: center; gap: 8px;
+    height: 30px; padding: 0 8px;
+    background: linear-gradient(180deg, var(--title-a), var(--title-b));
+    border-bottom: 1px solid var(--line);
+  }
+  .lights { display: flex; gap: 5px; }
+  .light {
+    width: 13px; height: 13px;
+    padding: 0; cursor: pointer; appearance: none;
+    background: var(--light-bg);
+    border: 1px solid var(--light-line);
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,.45), inset -1px -1px 0 rgba(0,0,0,.18);
+    display: grid; place-items: center;
+  }
+  /* macOS traffic lights: close / minimize / zoom */
+  .close { --light-bg: #FF5F57; --light-line: #E0443E; }
+  .min   { --light-bg: #FEBC2E; --light-line: #DEA123; }
+  .zoom  { --light-bg: #28C840; --light-line: #1AAB29; }
+  /* Glyphs show on hover, like macOS */
+  .glyph { display: block; opacity: 0; transition: opacity .12s; }
+  .lights:hover .glyph { opacity: 1; }
+  .sq { width: 5px; height: 5px; border: 1px solid rgba(0,0,0,.55); }
+  .dash { width: 7px; height: 1px; background: rgba(0,0,0,.55); }
+  .corner { width: 7px; height: 7px; border: 1px solid rgba(0,0,0,.55); border-width: 1px 1px 0 0; }
+  .rail { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
+  .rule { flex: 1; height: 8px; background: repeating-linear-gradient(0deg, transparent 0 1px, rgba(0,0,0,.16) 1px 2px); }
+  .title {
+    font-size: 11px; font-weight: 700; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; max-width: 70%;
+  }
+  .spacer { width: 44px; }
+
+  /* Sidebar + content */
+  .body {
+    display: grid;
+    grid-template-columns: minmax(0, 196px) minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .content { background: var(--win); min-width: 0; }
+
+  /* Status bar */
+  .statusbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 5px 10px;
+    background: var(--chrome);
+    border-top: 1px solid var(--line);
+    box-shadow: var(--bev-out);
+  }
+  .status { font-size: 9px; color: var(--ink-2); }
+  .sig { font-size: 9px; color: var(--ink-3); white-space: nowrap; }
+
+  @media (max-width: 760px) {
+    .body { grid-template-columns: minmax(0, 1fr); }
+    .spacer { display: none; }
+  }
+</style>

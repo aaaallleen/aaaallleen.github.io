@@ -1,0 +1,49 @@
+---
+/** Help → About: a small "About This Mac"-style panel. */
+import astroPkg from 'astro/package.json';
+import { site } from '../site.config';
+const built = new Date().toISOString().slice(0, 10);
+---
+<dialog class="about" data-about aria-labelledby="about-title">
+  <div class="titlebar"><span class="px" id="about-title">About {site.brand}</span></div>
+  <div class="body">
+    <div class="logo" aria-hidden="true"></div>
+    <div class="px name">{site.brand}</div>
+    <div class="px ver">Version 1.0 &middot; built {built}</div>
+    <dl>
+      <div><dt class="px">ENGINE</dt><dd>Astro {astroPkg.version}, fully static</dd></div>
+      <div><dt class="px">HOSTING</dt><dd>GitHub Pages</dd></div>
+      <div><dt class="px">DESIGN</dt><dd>Retro desktop, mocked up in Claude Design</dd></div>
+      <div><dt class="px">TYPE</dt><dd>Silkscreen &amp; Verdana</dd></div>
+      <div><dt class="px">OWNER</dt><dd>{site.name} &middot; {site.location}</dd></div>
+    </dl>
+    <form method="dialog"><button class="btn btn-primary" type="submit" autofocus>OK</button></form>
+  </div>
+</dialog>
+
+<style>
+  .about {
+    padding: 0; border: 1px solid var(--line);
+    background: var(--chrome); color: var(--ink);
+    box-shadow: var(--drop);
+    width: min(380px, 92vw);
+  }
+  .about::backdrop { background: rgba(0,0,0,.35); }
+  .titlebar {
+    height: 26px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(180deg, var(--title-a), var(--title-b));
+    border-bottom: 1px solid var(--line);
+    font-size: 10px; font-weight: 700;
+  }
+  .body { padding: 22px 22px 18px; text-align: center; }
+  .logo { width: 22px; height: 22px; margin: 4px auto 16px; background: var(--ink); transform: rotate(45deg); }
+  .name { font-size: 13px; font-weight: 700; }
+  .ver { font-size: 9px; color: var(--ink-3); margin: 6px 0 18px; }
+  dl { margin: 0 0 18px; text-align: left; border-top: 1px solid var(--line-soft); }
+  dl div {
+    display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px;
+    padding: 8px 0; border-bottom: 1px solid var(--line-soft);
+  }
+  dt { font-size: 9px; color: var(--ink-3); padding-top: 2px; }
+  dd { margin: 0; font-size: 12px; line-height: 1.5; }
+</style>

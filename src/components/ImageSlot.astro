@@ -1,0 +1,46 @@
+---
+/**
+ * Fills its (position:relative, aspect-ratio) parent with an image, or with a
+ * dashed placeholder styled after the design tool's empty <image-slot>.
+ */
+import { url } from '../lib/url';
+
+interface Props {
+  src?: string;
+  alt?: string;
+  placeholder?: string;
+  fit?: 'cover' | 'contain';
+  loading?: 'lazy' | 'eager';
+}
+const { src, alt = '', placeholder = 'Drop an image', fit = 'cover', loading = 'lazy' } = Astro.props;
+const resolved = src ? url(src) : undefined;
+---
+{resolved ? (
+  <img class="fill" src={resolved} alt={alt} loading={loading} style={`object-fit:${fit}`} />
+) : (
+  <div class="fill empty" role="img" aria-label={alt || placeholder}>
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <circle cx="8.5" cy="9.5" r="1.5" />
+      <path d="M21 16l-5-5-8 8" />
+      <path d="M3 18l4.5-4.5 3 3" />
+    </svg>
+    <span class="cap">{placeholder}</span>
+    <span class="ring" aria-hidden="true"></span>
+  </div>
+)}
+
+<style>
+  .fill { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .empty {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 6px; padding: 12px; text-align: center;
+    background: rgba(127,127,127,.08);
+    color: var(--ink-3);
+    font: 13px/1.3 system-ui, -apple-system, sans-serif;
+    user-select: none;
+  }
+  .empty svg { opacity: .45; }
+  .cap { max-width: 90%; font-weight: 500; letter-spacing: .01em; }
+  .ring { position: absolute; inset: 0; border: 1.5px dashed currentColor; opacity: .35; pointer-events: none; }
+</style>

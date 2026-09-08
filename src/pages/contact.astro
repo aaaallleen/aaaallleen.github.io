@@ -1,0 +1,32 @@
+---
+import Desktop from '../layouts/Desktop.astro';
+import { site } from '../site.config';
+---
+<Desktop section="contact" description="How to reach Allen Lu.">
+  <div class="page">
+    <h1 class="section-title tight">CONTACT</h1>
+    <p class="intro">Email is the reliable one.</p>
+    {site.contacts.map((c) => (
+      <a class="row" href={c.href}>
+        <span class="px k">{c.k}</span>
+        <span class="v">{c.v}</span>
+      </a>
+    ))}
+  </div>
+</Desktop>
+
+<style>
+  .page { padding: var(--pad-y-page) var(--pad-x); max-width: 640px; }
+  .tight { margin-bottom: 8px; }
+  .intro { font-size: 13px; color: var(--ink-2); margin: 0 0 26px; }
+  .row {
+    display: grid; grid-template-columns: minmax(0, 80px) minmax(0, 1fr); gap: 16px; align-items: center;
+    padding: 14px 16px; margin-bottom: 10px;
+    background: var(--chrome);
+    border: 1px solid var(--line);
+    box-shadow: var(--bev-out);
+    color: var(--ink); text-decoration: none;
+  }
+  .k { font-size: 9px; color: var(--ink-3); }
+  .v { font-size: 13px; font-weight: 700; word-break: break-all; }
+</style>

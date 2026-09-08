@@ -1,0 +1,64 @@
+---
+import { nav, type SectionKey } from '../data/nav';
+import { url } from '../lib/url';
+
+interface Props { current: SectionKey }
+const { current } = Astro.props;
+const isActive = (it: (typeof nav)[number]['items'][number]) => it.key === current || (it.also ?? []).includes(current);
+---
+<nav class="sidebar" aria-label="Site sections">
+  {nav.map((g) => (
+    <div class="group">
+      <div class="px group-label">{g.label}</div>
+      <div class="items">
+        {g.items.map((it) => (
+          <a class="item" href={url(it.href)} aria-current={isActive(it) ? 'page' : undefined}>
+            <span class="icon" aria-hidden="true"></span>
+            <span class="label">{it.label}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  ))}
+  <div class="px disk">Disk: 1 person<br />Free: plenty</div>
+</nav>
+
+<style>
+  .sidebar {
+    background: var(--panel);
+    border-right: 1px solid var(--line);
+    padding: 12px 0;
+  }
+  .group { margin-bottom: 18px; }
+  .group-label { font-size: 10px; color: var(--ink-3); padding: 0 12px 7px; }
+  .item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 5px 12px;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .item[aria-current="page"] { background: var(--sel); color: var(--sel-ink); }
+  .icon { width: 13px; height: 13px; flex: 0 0 auto; border: 1px solid currentColor; opacity: .8; }
+  .label { font-size: 11px; line-height: 1.3; }
+  .disk {
+    margin: 0 12px; padding-top: 14px;
+    border-top: 1px solid var(--line-soft);
+    font-size: 9px; color: var(--ink-3); line-height: 1.7;
+  }
+
+  /* Narrow screens: the sidebar becomes a strip above the content. */
+  @media (max-width: 760px) {
+    .sidebar {
+      display: flex; flex-wrap: wrap; gap: 8px 22px;
+      padding: 10px 12px 4px;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .group { margin-bottom: 6px; }
+    .group-label { padding: 0 0 4px; }
+    .items { display: flex; flex-wrap: wrap; gap: 2px 4px; }
+    .item { padding: 4px 8px; }
+    .disk { display: none; }
+  }
+</style>

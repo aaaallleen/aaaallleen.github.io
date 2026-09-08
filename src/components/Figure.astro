@@ -1,0 +1,36 @@
+---
+/**
+ * Bevelled "file" frame around an ImageSlot with an optional pixel-font caption.
+ * Used for the hero portrait and for figures inside posts (via MDX).
+ */
+import ImageSlot from './ImageSlot.astro';
+
+interface Props {
+  src?: string;
+  alt?: string;
+  caption?: string;
+  placeholder?: string;
+  aspect?: string;
+  fit?: 'cover' | 'contain';
+  loading?: 'lazy' | 'eager';
+}
+const { src, alt, caption, placeholder, aspect = '16/9', fit, loading } = Astro.props;
+---
+<figure class="figure">
+  <div class="slot" style={`aspect-ratio:${aspect}`}>
+    <ImageSlot src={src} alt={alt} placeholder={placeholder} fit={fit} loading={loading} />
+  </div>
+  {caption && <figcaption class="px">{caption}</figcaption>}
+</figure>
+
+<style>
+  .figure {
+    margin: 0;
+    background: var(--chrome);
+    border: 1px solid var(--line);
+    box-shadow: var(--drop);
+    padding: 7px;
+  }
+  .slot { position: relative; width: 100%; box-shadow: var(--bev-in); }
+  figcaption { font-size: 9px; color: var(--ink-2); padding-top: 6px; text-align: center; }
+</style>

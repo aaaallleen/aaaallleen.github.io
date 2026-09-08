@@ -1,0 +1,115 @@
+---
+import { site } from '../site.config';
+import { url } from '../lib/url';
+---
+<header class="menubar" data-menubar>
+  <div class="left">
+    <a class="logo" href={url('/')} aria-label="Home"></a>
+    <a class="px brand" href={url('/')}>{site.brand}</a>
+
+    <nav class="menus" aria-label="Application menu">
+      <div class="menu">
+        <button class="px menu-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-file" data-menu-btn>File</button>
+        <div class="dropdown" id="menu-file" role="menu" aria-label="File" hidden>
+          <a class="px item" role="menuitem" href={url('/cv/')}>Open CV</a>
+          <a class="px item" role="menuitem" href={url(site.cv.file)} download={site.cv.downloadName}>Download CV</a>
+          <hr class="sep" />
+          <button class="px item" type="button" role="menuitem" data-action="close" data-when="open minimized">Close Window</button>
+          <button class="px item" type="button" role="menuitem" data-action="reopen" data-href={url('/')} data-when="closed" hidden>Reopen Window</button>
+        </div>
+      </div>
+
+      <div class="menu">
+        <button class="px menu-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-view" data-menu-btn>View</button>
+        <div class="dropdown" id="menu-view" role="menu" aria-label="View" hidden>
+          <button class="px item" type="button" role="menuitem" data-action="theme"><span data-theme-label>{site.defaultTheme === 'night' ? 'Day' : 'Night'}</span> Mode</button>
+          <button class="px item" type="button" role="menuitem" data-action="zoom"><span data-zoom-label>Fill Screen</span></button>
+          <hr class="sep" />
+          <button class="px item" type="button" role="menuitem" data-action="minimize" data-when="open">Minimize Window</button>
+          <button class="px item" type="button" role="menuitem" data-action="restore" data-when="minimized" hidden>Restore Window</button>
+        </div>
+      </div>
+
+      <div class="menu">
+        <button class="px menu-btn" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="menu-help" data-menu-btn>Help</button>
+        <div class="dropdown" id="menu-help" role="menu" aria-label="Help" hidden>
+          <button class="px item" type="button" role="menuitem" data-action="about">About {site.brand}&hellip;</button>
+          <a class="px item" role="menuitem" href={`mailto:${site.email}`}>Email {site.name}</a>
+        </div>
+      </div>
+    </nav>
+  </div>
+
+  <div class="right">
+    <button class="px toggle" type="button" data-action="theme" aria-label="Toggle day / night theme">
+      <span data-theme-label>{site.defaultTheme === 'night' ? 'Day' : 'Night'}</span>
+    </button>
+    <span class="px clock" data-clock>Mon 3:42 PM</span>
+  </div>
+</header>
+
+<style>
+  .menubar {
+    position: sticky; top: 0; z-index: 40;
+    height: 26px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 10px;
+    background: linear-gradient(180deg, var(--title-a), var(--title-b));
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--bev-out);
+  }
+  .left, .right { display: flex; align-items: center; }
+  .left { gap: 10px; }
+  .right { gap: 12px; }
+  .logo { width: 11px; height: 11px; background: var(--ink); transform: rotate(45deg); flex: 0 0 auto; margin-right: 6px; }
+  .brand { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-decoration: none; color: var(--ink); margin-right: 4px; }
+
+  /* Menus */
+  .menus { display: flex; align-items: center; height: 26px; }
+  .menu { position: relative; height: 100%; }
+  .menu-btn {
+    height: 100%;
+    padding: 0 6px;
+    background: none; border: 0;
+    font-size: 11px; color: var(--ink-2);
+    cursor: default;
+    appearance: none;
+  }
+  .menu-btn.is-open { background: var(--sel); color: var(--sel-ink); }
+  .dropdown {
+    position: absolute; top: 100%; left: 0; z-index: 50;
+    min-width: 190px;
+    padding: 4px;
+    background: var(--chrome);
+    border: 1px solid var(--line);
+    box-shadow: var(--drop), var(--bev-out);
+  }
+  .item {
+    display: block; width: 100%;
+    padding: 6px 12px;
+    background: none; border: 0;
+    font-size: 10px; color: var(--ink); text-align: left; text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    appearance: none;
+  }
+  .item:hover, .item:focus-visible { background: var(--sel); color: var(--sel-ink); outline: none; }
+  .sep { border: 0; border-top: 1px solid var(--line-soft); margin: 4px 6px; }
+
+  .toggle {
+    display: flex; align-items: center; gap: 6px;
+    padding: 2px 7px;
+    background: var(--chrome);
+    border: 1px solid var(--line);
+    box-shadow: var(--bev-out);
+    font-size: 10px;
+    cursor: pointer;
+    appearance: none;
+  }
+  .clock { font-size: 11px; color: var(--ink-2); white-space: nowrap; }
+
+  @media (max-width: 560px) {
+    .clock { display: none; }
+    .brand { display: none; }
+  }
+</style>

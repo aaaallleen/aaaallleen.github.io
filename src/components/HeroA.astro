@@ -1,0 +1,50 @@
+---
+import Figure from './Figure.astro';
+import { site } from '../site.config';
+import { url } from '../lib/url';
+const { hero } = site;
+---
+<section class="hero">
+  <div>
+    <div class="px kicker">{hero.kicker}</div>
+    <h1>{site.name}</h1>
+    <p class="lede">{hero.taglineA}</p>
+    <div class="actions">
+      <a class="btn btn-primary" href={url('/cv/')}>Read the CV</a>
+      <a class="btn btn-chrome" href={url('/writing/')}>Writing</a>
+    </div>
+  </div>
+  <div class="portrait">
+    <Figure
+      src={hero.portrait.src}
+      alt={hero.portrait.alt}
+      caption={hero.portrait.caption}
+      placeholder={hero.portrait.placeholder}
+      aspect="4/5"
+      loading="eager"
+    />
+  </div>
+</section>
+
+<style>
+  .hero {
+    padding: clamp(28px, 5vw, 56px) var(--pad-x);
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: clamp(24px, 4vw, 48px);
+    align-items: center;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .kicker { font-size: 10px; color: var(--ink-3); margin-bottom: 16px; }
+  h1 {
+    font-size: clamp(40px, 6vw, 68px);
+    line-height: 1.02; letter-spacing: -.03em;
+    margin: 0 0 18px; font-weight: 700;
+  }
+  .lede { font-size: 14px; line-height: 1.7; color: var(--ink-2); max-width: 52ch; margin: 0 0 24px; }
+  .actions { display: flex; gap: 9px; flex-wrap: wrap; }
+  @media (max-width: 720px) {
+    .hero { grid-template-columns: minmax(0, 1fr); }
+    .portrait { max-width: 320px; }
+  }
+</style>

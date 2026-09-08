@@ -1,0 +1,48 @@
+---
+import ImageSlot from './ImageSlot.astro';
+import { site } from '../site.config';
+import { url } from '../lib/url';
+const { hero } = site;
+---
+<section class="hero">
+  <div class="band">
+    <ImageSlot src={hero.band.src} alt={hero.band.alt} placeholder={hero.band.placeholder} loading="eager" />
+  </div>
+  <div class="body">
+    <div>
+      <div class="live">
+        <span class="dot" aria-hidden="true"></span>
+        <span class="px status">{hero.statusB}</span>
+      </div>
+      <h1>{hero.headlineB}</h1>
+    </div>
+    <div>
+      <p class="lede">{hero.taglineB}</p>
+      <div class="actions">
+        <a class="btn btn-primary" href={url('/cv/')}>Read the CV</a>
+        <a class="btn btn-chrome" href={url('/writing/')}>Writing</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero { border-bottom: 1px solid var(--line-soft); }
+  .band { position: relative; width: 100%; aspect-ratio: 24/9; border-bottom: 1px solid var(--line); }
+  .body {
+    padding: clamp(24px, 4vw, 44px) var(--pad-x);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: clamp(20px, 3vw, 40px);
+    align-items: end;
+  }
+  .live { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .dot { width: 7px; height: 7px; background: var(--accent); animation: al-blink 2.2s ease-in-out infinite; }
+  .status { font-size: 10px; color: var(--ink-3); }
+  h1 { font-size: clamp(30px, 4.4vw, 52px); line-height: 1.05; letter-spacing: -.02em; margin: 0; font-weight: 700; }
+  .lede { font-size: 14px; line-height: 1.7; color: var(--ink-2); margin: 0 0 20px; }
+  .actions { display: flex; gap: 9px; flex-wrap: wrap; }
+  @media (max-width: 720px) {
+    .body { grid-template-columns: minmax(0, 1fr); align-items: start; }
+  }
+</style>

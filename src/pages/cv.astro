@@ -1,0 +1,49 @@
+---
+import Desktop from '../layouts/Desktop.astro';
+import { site } from '../site.config';
+import { url } from '../lib/url';
+const pdf = url(site.cv.file);
+---
+<Desktop section="cv" description="Allen Lu — CV (PDF).">
+  <div class="page">
+    <div class="viewer">
+      <div class="head">
+        <div class="name">
+          <span class="px file">{site.cv.label}</span>
+          <span class="px pages">{site.cv.pages} pages</span>
+        </div>
+        <a class="px download" href={pdf} download={site.cv.downloadName}>Download</a>
+      </div>
+      <div class="body">
+        <iframe src={`${pdf}#view=FitH`} title={`${site.name} CV ${site.year}`}></iframe>
+        <p class="fallback">If the preview does not load, <a href={pdf}>open the PDF directly</a>.</p>
+      </div>
+    </div>
+  </div>
+</Desktop>
+
+<style>
+  .page { padding: clamp(20px, 3vw, 32px); }
+  .viewer { background: var(--chrome); border: 1px solid var(--line); box-shadow: var(--drop); }
+  .head {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 7px 9px; border-bottom: 1px solid var(--line);
+  }
+  .name { display: flex; align-items: center; gap: 8px; }
+  .file { font-size: 10px; font-weight: 700; }
+  .pages { font-size: 9px; color: var(--ink-3); }
+  .download {
+    padding: 5px 13px;
+    background: var(--sel); color: var(--sel-ink);
+    border: 1px solid var(--line);
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,.3);
+    font-size: 10px; text-decoration: none;
+  }
+  .body { padding: 9px; background: var(--panel); }
+  iframe {
+    display: block; width: 100%; height: min(78vh, 900px);
+    border: 1px solid var(--line); background: #fff; box-shadow: var(--bev-in);
+  }
+  .fallback { font-size: 11px; color: var(--ink-3); margin: 8px 0 0; text-align: center; }
+  .fallback a { color: var(--accent); }
+</style>

@@ -1,0 +1,80 @@
+---
+# ─── Post template ─────────────────────────────────────────────────────────────
+# Copy this file (or run `npm run new-post -- "Post title"`), then fill it in.
+# The file name is the URL: my-post.mdx -> /writing/my-post/
+# Files starting with "_" are never published, so this template is safe here.
+
+title: "Post title: a specific claim, ideally with a number in it"
+date: 2026-01-01          # YYYY-MM-DD. Shown as "JAN 2026" and used for ordering.
+dek: "One sentence under the title in lists. Say what happened, not what the post is about."
+topic: Profiling          # Short category for the TOPIC column: Profiling, Compilation, Projects, Systems…
+# minutes: 8              # Optional. Overrides the word-count estimate shown as "8 MIN".
+draft: true               # Visible in `npm run dev`, hidden from the published site. Flip to false to ship.
+---
+import Figure from '../../components/Figure.astro';
+
+{/* ── Opening ──────────────────────────────────────────────────────────────────
+    The first paragraph renders in darker ink than the rest, so make it the hook:
+    the number that moved, the thing that broke, the question that started it. */}
+
+Open with the symptom and the stakes in two or three sentences. A batch that should have issued a few hundred kernels was issuing forty-five thousand. The GPU was not slow. It was waiting.
+
+Second paragraph: what a reader needs to know to follow along, and the question the rest of the post answers.
+
+{/* ── Sections ─────────────────────────────────────────────────────────────────
+    H2s render as small pixel-font labels, so keep them SHORT and UPPERCASE to
+    match the rest of the site. A typical investigation post reads well as:
+    THE SYMPTOM → WHAT THE PROFILER SHOWED → THE CAUSE → THE FIX → WHAT I'D LOOK FOR NEXT TIME */}
+
+## WHAT THE PROFILER SHOWED
+
+Describe what you observed before you touched any code. Inline code like `cudaLaunchKernel` or `torch.compile` is fine in prose.
+
+```
+nsys profile --stats=true python infer.py
+  → cudaLaunchKernel  45,182 calls
+  → sm__issue_active    17.2%
+```
+
+Code blocks render as plain monospace on a bevelled panel, with no syntax colouring, so use them for terminal output, traces, and short snippets rather than long source listings.
+
+<Figure
+  src="images/posts/my-post/fig-1.png"
+  alt="Describe the image for people who cannot see it"
+  caption="fig-1-nsight-timeline.png"
+  aspect="16/9"
+/>
+
+{/* Drop images in public/images/posts/<slug>/ and reference them by that path.
+    Leave `src` off to render the dashed placeholder while you are drafting. */}
+
+## THE CAUSE
+
+Explain the mechanism, not just the finding. A pull quote is a good place for the one-sentence version:
+
+> The flag was global, the CUDA context was shared, and nobody had connected those two facts.
+
+Lists are fine for parallel points:
+
+- What the code assumed.
+- What the runtime actually did.
+- Why the two disagreed only under load.
+
+Math is LaTeX between dollar signs. Inline, $t_{\text{total}} = n \cdot t_{\text{launch}} + \sum_i t_i$, or on its own line:
+
+$$
+\text{util} = \frac{\sum_i t_i}{t_{\text{total}}} \approx 17.2\%
+$$
+
+## THE FIX
+
+What changed, and the number it moved. Tables work for before/after:
+
+| Metric               | Before   | After  |
+| -------------------- | -------- | ------ |
+| Kernel launches      | 45,182   | 91     |
+| Batch latency (p50)  | 410 ms   | 17 ms  |
+
+## WHAT I'D LOOK FOR NEXT TIME
+
+Close with the reusable lesson: the shape in the trace, the question to ask first, the check to add. One or two paragraphs. Link out where useful, for example to the [Nsight Systems docs](https://docs.nvidia.com/nsight-systems/).

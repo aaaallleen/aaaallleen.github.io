@@ -1,0 +1,94 @@
+---
+import { render } from 'astro:content';
+import 'katex/dist/katex.min.css'; // math rendering styles + fonts, bundled locally
+import Desktop from '../../layouts/Desktop.astro';
+import { getPosts } from '../../lib/posts';
+import { monthYear, readingTime } from '../../lib/format';
+import { url } from '../../lib/url';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const minutes = readingTime(post.body, post.data.minutes);
+const meta = `${monthYear(post.data.date)} · ${post.data.topic.toUpperCase()} · ${minutes} MIN`;
+---
+<Desktop
+  section="post"
+  windowTitle={`Writing — ${post.data.title}`}
+  tabTitle={`${post.data.title} · Allen Lu`}
+  description={post.data.dek}
+>
+  <article class="post">
+    <a class="px back" href={url('/writing/')}>&lt; All posts</a>
+    <div class="px meta">{meta}</div>
+    <h1>{post.data.title}</h1>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</Desktop>
+
+<style>
+  .post { padding: var(--pad-y-page) var(--pad-x); max-width: 760px; }
+  .back { display: inline-block; font-size: 10px; color: var(--accent); text-decoration: none; margin-bottom: 24px; }
+  .meta { font-size: 9px; color: var(--ink-3); margin-bottom: 14px; }
+  h1 {
+    font-size: clamp(26px, 3.6vw, 40px);
+    line-height: 1.12; letter-spacing: -.02em;
+    margin: 0 0 22px; font-weight: 700;
+  }
+</style>
+
+<style is:global>
+  /* Post body typography — matches the mockup's article styles. */
+  .prose > * + * { margin-top: 0; }
+  .prose p { font-size: 15px; line-height: 1.8; margin: 0 0 18px; color: var(--ink-2); }
+  .prose > p:first-child { color: var(--ink); }
+  .prose h2 { font-family: var(--font-px); font-size: 11px; font-weight: 700; margin: 30px 0 14px; }
+  .prose h3 { font-size: 15px; font-weight: 700; margin: 26px 0 10px; }
+  .prose a { color: var(--accent); }
+  .prose ul, .prose ol { margin: 0 0 18px; padding-left: 22px; font-size: 15px; line-height: 1.8; color: var(--ink-2); }
+  .prose li + li { margin-top: 4px; }
+  .prose strong { color: var(--ink); }
+  .prose hr { border: 0; border-top: 1px solid var(--line-soft); margin: 26px 0; }
+
+  .prose pre {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: var(--bev-in);
+    padding: 13px 15px;
+    margin: 0 0 26px;
+    overflow-x: auto;
+  }
+  .prose pre code { font: 12px/1.7 var(--font-mono); color: var(--ink); background: none; padding: 0; }
+  .prose :not(pre) > code {
+    font-family: var(--font-mono); font-size: .9em;
+    background: var(--panel); border: 1px solid var(--line-soft); padding: 0 4px;
+  }
+
+  .prose blockquote { border-left: 3px solid var(--accent); padding: 2px 0 2px 16px; margin: 0 0 26px; }
+  .prose blockquote p { font-size: 17px; line-height: 1.6; margin: 0; font-weight: 700; color: var(--ink); }
+
+  .prose figure { margin: 0 0 26px; }
+
+  /* Math (KaTeX). Inline math inherits the text colour; display math sits on
+     the same bevelled panel as code so equations and traces read as one system. */
+  .prose .katex { font-size: 1.08em; }
+  .prose .katex-display {
+    margin: 0 0 26px;
+    padding: 14px 16px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    box-shadow: var(--bev-in);
+    overflow-x: auto; overflow-y: hidden;
+  }
+  .prose .katex-display > .katex { font-size: 1.15em; }
+  .prose img { max-width: 100%; height: auto; }
+  .prose table { border-collapse: collapse; font-size: 13px; margin: 0 0 26px; width: 100%; }
+  .prose th, .prose td { border: 1px solid var(--line-soft); padding: 6px 10px; text-align: left; }
+  .prose th { background: var(--panel); font-family: var(--font-px); font-size: 9px; color: var(--ink-3); }
+</style>

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap">
+<script src="./image-slot.js"></script>
+<style>
+  body { margin: 0; -webkit-font-smoothing: antialiased; }
+  :root {
+    --desk-a: #7E9BB8; --desk-b: #8CA7C1;
+    --chrome: #DCDCDC; --chrome-2: #C6C6C6; --win: #F5F5F5; --panel: #EDEDED;
+    --ink: #1A1A1A; --ink-2: #4C4C4C; --ink-3: #7A7A7A;
+    --line: #9C9C9C; --line-soft: #C8C8C8;
+    --sel: #2C5CA8; --sel-ink: #FFFFFF; --accent: #2C5CA8;
+    --title-a: #F0F0F0; --title-b: #C4C4C4;
+    --bev-out: inset 1px 1px 0 rgba(255,255,255,.95), inset -1px -1px 0 rgba(0,0,0,.26);
+    --bev-in: inset 1px 1px 0 rgba(0,0,0,.30), inset -1px -1px 0 rgba(255,255,255,.85);
+    --drop: 3px 3px 0 rgba(0,0,0,.22);
+  }
+  [data-theme="night"] {
+    --desk-a: #23282E; --desk-b: #2B3138;
+    --chrome: #4B5159; --chrome-2: #3B4148; --win: #2C3138; --panel: #343A41;
+    --ink: #EDEEF0; --ink-2: #BEC4CB; --ink-3: #8C939B;
+    --line: #1C2025; --line-soft: #3E444B;
+    --sel: #35608F; --sel-ink: #FFFFFF; --accent: #7FB3E8;
+    --title-a: #5A6169; --title-b: #3A4047;
+    --bev-out: inset 1px 1px 0 rgba(255,255,255,.16), inset -1px -1px 0 rgba(0,0,0,.5);
+    --bev-in: inset 1px 1px 0 rgba(0,0,0,.55), inset -1px -1px 0 rgba(255,255,255,.12);
+    --drop: 3px 3px 0 rgba(0,0,0,.4);
+  }
+  @keyframes al-blink { 0%,100% { opacity: 1 } 50% { opacity: .3 } }
+</style>
+</helmet>
+
+<div data-theme="{{ theme }}" style="min-height:100vh;font-family:Verdana,Geneva,Tahoma,sans-serif;color:var(--ink);background:var(--desk-a);background-image:repeating-linear-gradient(0deg,var(--desk-a) 0 3px,var(--desk-b) 3px 6px);padding-bottom:64px">
+
+  <div style="position:sticky;top:0;z-index:40;height:26px;display:flex;align-items:center;justify-content:space-between;padding:0 10px;background:linear-gradient(180deg,var(--title-a),var(--title-b));border-bottom:1px solid var(--line);box-shadow:var(--bev-out)">
+    <div style="display:flex;align-items:center;gap:16px">
+      <div style="width:11px;height:11px;background:var(--ink);transform:rotate(45deg)"></div>
+      <span style="font-family:Silkscreen,monospace;font-size:11px;font-weight:700;letter-spacing:.04em">allenlu.dev</span>
+      <span style="font-family:Silkscreen,monospace;font-size:11px;color:var(--ink-2)">File</span>
+      <span style="font-family:Silkscreen,monospace;font-size:11px;color:var(--ink-2)">View</span>
+      <span style="font-family:Silkscreen,monospace;font-size:11px;color:var(--ink-2)">Help</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div onClick="{{ toggleTheme }}" style="cursor:pointer;display:flex;align-items:center;gap:6px;padding:2px 7px;background:var(--chrome);border:1px solid var(--line);box-shadow:var(--bev-out)">
+        <span style="font-family:Silkscreen,monospace;font-size:10px">{{ themeLabel }}</span>
+      </div>
+      <span style="font-family:Silkscreen,monospace;font-size:11px;color:var(--ink-2)">Mon 3:42 PM</span>
+    </div>
+  </div>
+
+  <div style="max-width:1160px;margin:0 auto;padding:clamp(18px,4vw,44px) clamp(10px,3vw,32px) 0">
+    <div style="background:var(--chrome);border:1px solid var(--line);box-shadow:var(--drop)">
+
+      <div style="display:flex;align-items:center;gap:8px;height:30px;padding:0 8px;background:linear-gradient(180deg,var(--title-a),var(--title-b));border-bottom:1px solid var(--line)">
+        <div style="display:flex;gap:5px">
+          <div style="width:13px;height:13px;background:var(--chrome);border:1px solid var(--line);box-shadow:var(--bev-out);display:grid;place-items:center;cursor:pointer"><div style="width:5px;height:5px;border:1px solid var(--ink-2)"></div></div>
+          <div style="width:13px;height:13px;background:var(--chrome);border:1px solid var(--line);box-shadow:var(--bev-out);display:grid;place-items:center;cursor:pointer"><div style="width:7px;height:1px;background:var(--ink-2)"></div></div>
+          <div style="width:13px;height:13px;background:var(--chrome);border:1px solid var(--line);box-shadow:var(--bev-out);display:grid;place-items:center;cursor:pointer"><div style="width:7px;height:7px;border:1px solid var(--ink-2);border-width:1px 1px 0 0"></div></div>
+        </div>
+        <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-width:0">
+          <div style="flex:1;height:8px;background:repeating-linear-gradient(0deg,transparent 0 1px,rgba(0,0,0,.16) 1px 2px)"></div>
+          <span style="font-family:Silkscreen,monospace;font-size:11px;font-weight:700;white-space:nowrap">{{ windowTitle }}</span>
+          <div style="flex:1;height:8px;background:repeating-linear-gradient(0deg,transparent 0 1px,rgba(0,0,0,.16) 1px 2px)"></div>
+        </div>
+        <div style="width:44px"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:7px 9px;background:var(--chrome);border-bottom:1px solid var(--line)">
+        <div style="display:flex;align-items:center;gap:6px">
+          <div onClick="{{ goBack }}" style="cursor:pointer;padding:4px 11px;background:var(--chrome-2);border:1px solid var(--line);box-shadow:var(--bev-out);font-family:Silkscreen,monospace;font-size:10px">&lt; Back</div>
+          <div onClick="{{ goHome }}" style="cursor:pointer;padding:4px 11px;background:var(--chrome-2);border:1px solid var(--line);box-shadow:var(--bev-out);font-family:Silkscreen,monospace;font-size:10px">Home</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+            <div style="display:flex;align-items:center;gap:7px">
+              <span style="font-family:Silkscreen,monospace;font-size:10px;color:var(--ink-3)">Hero layout</span>
+              <div style="display:flex;border:1px solid var(--line);box-shadow:var(--bev-in)">
+                <sc-for list="{{ variants }}" as="v" hint-placeholder-count="2">
+                  <div onClick="{{ v.go }}" style="cursor:pointer;padding:4px 12px;font-family:Silkscreen,monospace;font-size:10px;background:{{ v.bg }};color:{{ v.fg }}">{{ v.label }}</div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-if>
+          <a href="assets/allen-lu-cv-2026.pdf" download="Allen-Lu-CV-2026.pdf" style="text-decoration:none;padding:4px 11px;background:var(--chrome-2);border:1px solid var(--line);box-shadow:var(--bev-out);font-family:Silkscreen,monospace;font-size:10px;color:var(--ink)">Download CV</a>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:minmax(0,196px) minmax(0,1fr);align-items:stretch">
+
+        <div style="background:var(--panel);border-right:1px solid var(--line);padding:12px 0">
+          <sc-for list="{{ sidebar }}" as="g" hint-placeholder-count="3">
+            <div style="margin-bottom:18px">
+              <div style="font-family:Silkscreen,monospace;font-size:10px;color:var(--ink-3);padding:0 12px 7px">{{ g.label }}</div>
+              <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="4">
+                <div onClick="{{ it.go }}" style="cursor:pointer;display:flex;align-items:center;gap:9px;padding:5px 12px;background:{{ it.bg }};color:{{ it.fg }}">
+                  <div style="width:13px;height:13px;flex:0 0 auto;border:1px solid {{ it.fg }};box-shadow:inset 0 0 0 2px {{ it.bg }};opacity:.8"></div>
+                  <span style="font-size:11px;line-height:1.3">{{ it.label }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+          <div style="margin:0 12px;padding-top:14px;border-top:1px solid var(--line-soft)">
+            <div style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3);line-height:1.7">Disk: 1 person<br>Free: plenty</div>
+          </div>
+        </div>
+
+        <div style="background:var(--win);min-width:0">
+
+          <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+          <div>
+            <sc-if value="{{ isVariantA }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:clamp(28px,5vw,56px) clamp(20px,4vw,52px);display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:clamp(24px,4vw,48px);align-items:center;border-bottom:1px solid var(--line-soft)">
+              <div>
+                <div style="font-family:Silkscreen,monospace;font-size:10px;color:var(--ink-3);margin-bottom:16px">ML INFRASTRUCTURE ENGINEER &middot; AMBIENT.AI</div>
+                <h1 style="font-size:clamp(40px,6vw,68px);line-height:1.02;letter-spacing:-.03em;margin:0 0 18px;font-weight:700">Allen Lu</h1>
+                <p style="font-size:14px;line-height:1.7;color:var(--ink-2);max-width:52ch;margin:0 0 24px">Placeholder tagline goes here — a couple of sentences on what you build and why it matters. GPU inference systems, model compilation paths, and the profiling work that makes real-time computer vision cheap enough to run everywhere.</p>
+                <div style="display:flex;gap:9px;flex-wrap:wrap">
+                  <div onClick="{{ goCv }}" style="cursor:pointer;padding:8px 16px;background:var(--sel);color:var(--sel-ink);border:1px solid var(--line);box-shadow:inset 1px 1px 0 rgba(255,255,255,.3);font-size:11px;font-weight:700">Read the CV</div>
+                  <div onClick="{{ goBlog }}" style="cursor:pointer;padding:8px 16px;background:var(--chrome);border:1px solid var(--line);box-shadow:var(--bev-out);font-size:11px;font-weight:700;color:var(--ink)">Writing</div>
+                </div>
+              </div>
+              <div style="background:var(--chrome);border:1px solid var(--line);box-shadow:var(--drop);padding:7px">
+                <div style="position:relative;width:100%;aspect-ratio:4/5;box-shadow:var(--bev-in)">
+                  <image-slot id="hero-portrait" shape="rect" placeholder="Drop a portrait"></image-slot>
+                </div>
+                <div style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-2);padding-top:6px;text-align:center">portrait.jpg</div>
+              </div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ isVariantB }}">
+            <div style="border-bottom:1px solid var(--line-soft)">
+              <div style="position:relative;width:100%;aspect-ratio:24/9;border-bottom:1px solid var(--line)">
+                <image-slot id="hero-band" shape="rect" placeholder="Drop a wide image — desk, rack, profiler capture"></image-slot>
+              </div>
+              <div style="padding:clamp(24px,4vw,44px) clamp(20px,4vw,52px);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(20px,3vw,40px);align-items:end">
+                <div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+                    <div style="width:7px;height:7px;background:var(--accent);animation:al-blink 2.2s ease-in-out infinite"></div>
+                    <span style="font-family:Silkscreen,monospace;font-size:10px;color:var(--ink-3)">SAN DIEGO, CA &middot; AVAILABLE FOR CONVERSATION</span>
+                  </div>
+                  <h1 style="font-size:clamp(30px,4.4vw,52px);line-height:1.05;letter-spacing:-.02em;margin:0;font-weight:700">Allen Lu builds the layer between models and hardware.</h1>
+                </div>
+                <div>
+                  <p style="font-size:14px;line-height:1.7;color:var(--ink-2);margin:0 0 20px">Placeholder tagline goes here — one paragraph on the work, the systems, and the numbers you like moving.</p>
+                  <div style="display:flex;gap:9px;flex-wrap:wrap">
+                    <div onClick="{{ goCv }}" style="cursor:pointer;padding:8px 16px;background:var(--sel);color:var(--sel-ink);border:1px solid var(--line);box-shadow:inset 1px 1px 0 rgba(255,255,255,.3);font-size:11px;font-weight:700">Read the CV</div>
+                    <div onClick="{{ goBlog }}" style="cursor:pointer;padding:8px 16px;background:var(--chrome);border:1px solid var(--line);box-shadow:var(--bev-out);font-size:11px;font-weight:700;color:var(--ink)">Writing</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+
+            <div style="padding:clamp(28px,4vw,52px) clamp(20px,4vw,52px);border-bottom:1px solid var(--line-soft)">
+              <div style="font-family:Silkscreen,monospace;font-size:11px;font-weight:700;margin-bottom:22px">ABOUT ME</div>
+              <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:clamp(24px,4vw,52px)">
+                <div>
+                  <p style="font-size:14px;line-height:1.75;margin:0 0 14px">I work on the layer between models and hardware. At Ambient.AI I moved an eleven-model real-time computer vision pipeline off monolithic PyTorch onto NVIDIA Triton, then spent most of my time in profilers finding out why the GPUs were still idle.</p>
+                  <p style="font-size:14px;line-height:1.75;margin:0 0 14px;color:var(--ink-2)">The answers are rarely in the model. They are in graph breaks, kernel launch counts, a global flag contaminating a shared CUDA context, a scheduler that never overlaps preprocessing with execution. I like the part of the job where a number moves because someone finally understood the system.</p>
+                  <p style="font-size:14px;line-height:1.75;margin:0;color:var(--ink-2)">Before Ambient I studied computer science at UC San Diego and National Tsing Hua University, and did research on reinforcement learning environments for LLM tool use and on cross-spectral estimators for multichannel EEG.</p>
+                  <div style="margin-top:26px;display:flex;flex-wrap:wrap;gap:6px">
+                    <sc-for list="{{ skills }}" as="s" hint-placeholder-count="12">
+                      <div style="padding:4px 9px;background:var(--chrome);border:1px solid var(--line);box-shadow:var(--bev-out);font-size:10px;color:var(--ink-2)">{{ s }}</div>
+                    </sc-for>
+                  </div>
+                </div>
+                <div style="background:var(--panel);border:1px solid var(--line);box-shadow:var(--bev-in);padding:14px 16px;align-self:start">
+                  <div style="font-family:Silkscreen,monospace;font-size:10px;color:var(--ink-3);padding-bottom:10px;border-bottom:1px solid var(--line-soft)">GET INFO</div>
+                  <sc-for list="{{ facts }}" as="f" hint-placeholder-count="5">
+                    <div style="display:grid;grid-template-columns:minmax(0,72px) minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--line-soft)">
+                      <span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3);padding-top:2px">{{ f.k }}</span>
+                      <span style="font-size:12px;line-height:1.5">{{ f.v }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+
+            <div style="padding:clamp(28px,4vw,52px) clamp(20px,4vw,52px);border-bottom:1px solid var(--line-soft)">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:22px">
+                <div style="font-family:Silkscreen,monospace;font-size:11px;font-weight:700">RECENT WRITING</div>
+                <div onClick="{{ goBlog }}" style="cursor:pointer;font-family:Silkscreen,monospace;font-size:10px;color:var(--accent)">All posts &gt;</div>
+              </div>
+              <sc-for list="{{ recentPosts }}" as="p" hint-placeholder-count="3">
+                <div onClick="{{ p.go }}" style="cursor:pointer;display:grid;grid-template-columns:minmax(0,86px) minmax(0,1fr);gap:16px;padding:12px 10px;border-bottom:1px solid var(--line-soft);background:{{ p.bg }}">
+                  <span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3);padding-top:3px">{{ p.date }}</span>
+                  <div>
+                    <div style="font-size:13px;font-weight:700;line-height:1.4">{{ p.title }}</div>
+                    <div style="font-size:12px;color:var(--ink-2);line-height:1.55;padding-top:4px">{{ p.dek }}</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="padding:clamp(28px,4vw,52px) clamp(20px,4vw,52px)">
+              <div style="font-family:Silkscreen,monospace;font-size:11px;font-weight:700;margin-bottom:20px">CONTACT</div>
+              <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px">
+                <sc-for list="{{ contacts }}" as="c" hint-placeholder-count="3">
+                  <a href="{{ c.href }}" style="text-decoration:none;color:var(--ink);display:block;background:var(--chrome);border:1px solid var(--line);box-shadow:var(--bev-out);padding:14px 16px">
+                    <div style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3);margin-bottom:7px">{{ c.k }}</div>
+                    <div style="font-size:12px;font-weight:700;word-break:break-all">{{ c.v }}</div>
+                  </a>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isExperience }}">
+          <div style="padding:clamp(26px,4vw,48px) clamp(20px,4vw,52px)">
+            <div style="font-family:Silkscreen,monospace;font-size:11px;font-weight:700;margin-bottom:8px">EXPERIENCE</div>
+            <p style="font-size:13px;color:var(--ink-2);margin:0 0 30px;max-width:60ch">Work on the left, education on the right, one shared spine. Condensed highlights — the full record is on the CV.</p>
+            <div style="display:flex;gap:20px;margin-bottom:24px">
+              <div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;background:var(--ink)"></div><span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-2)">WORK</span></div>
+              <div style="display:flex;align-items:center;gap:7px"><div style="width:9px;height:9px;border:1px solid var(--ink)"></div><span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-2)">EDUCATION</span></div>
+            </div>
+            <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="5">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr);align-items:start">
+                <div style="padding:0 0 26px">
+                  <sc-if value="{{ t.isWork }}">
+                    <div style="background:var(--panel);border:1px solid var(--line);box-shadow:var(--drop);padding:15px 17px">
+                      <div style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3);margin-bottom:8px">{{ t.dates }}</div>
+                      <div style="font-size:15px;font-weight:700;line-height:1.3">{{ t.org }}</div>
+                      <div style="font-size:12px;color:var(--ink-2);padding:3px 0 10px">{{ t.role }}</div>
+                      <sc-for list="{{ t.bullets }}" as="b" hint-placeholder-count="3">
+                        <div style="display:grid;grid-template-columns:12px minmax(0,1fr);gap:8px;padding-bottom:6px">
+                          <div style="width:5px;height:5px;background:var(--accent);margin-top:6px"></div>
+                          <span style="font-size:12px;line-height:1.6;color:var(--ink-2)">{{ b }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+                <div style="justify-self:center;display:flex;flex-direction:column;align-items:center;height:100%">
+                  <div style="width:13px;height:13px;background:{{ t.nodeBg }};border:1px solid var(--ink);margin-top:14px;flex:0 0 auto"></div>
+                  <div style="width:1px;flex:1;background:var(--line)"></div>
+                </div>
+                <div style="padding:0 0 26px">
+                  <sc-if value="{{ t.isEdu }}">
+                    <div style="background:var(--win);border:1px solid var(--line);box-shadow:var(--bev-in);padding:15px 17px">
+                      <div style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3);margin-bottom:8px">{{ t.dates }}</div>
+                      <div style="font-size:15px;font-weight:700;line-height:1.3">{{ t.org }}</div>
+                      <div style="font-size:12px;color:var(--ink-2);padding:3px 0 10px">{{ t.role }}</div>
+                      <sc-for list="{{ t.bullets }}" as="b" hint-placeholder-count="2">
+                        <div style="display:grid;grid-template-columns:12px minmax(0,1fr);gap:8px;padding-bottom:6px">
+                          <div style="width:5px;height:5px;border:1px solid var(--ink-3);margin-top:6px"></div>
+                          <span style="font-size:12px;line-height:1.6;color:var(--ink-2)">{{ b }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                  </sc-if>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isProjects }}">
+          <div style="padding:clamp(26px,4vw,48px) clamp(20px,4vw,52px)">
+            <div style="font-family:Silkscreen,monospace;font-size:11px;font-weight:700;margin-bottom:8px">PROJECTS</div>
+            <p style="font-size:13px;color:var(--ink-2);margin:0 0 28px;max-width:60ch">Placeholder cards — drop an image on any tile and replace the copy when you send me the real projects.</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:16px">
+              <sc-for list="{{ projects }}" as="p" hint-placeholder-count="6">
+                <div style="background:var(--chrome);border:1px solid var(--line);box-shadow:var(--drop);padding:7px">
+                  <div style="position:relative;width:100%;aspect-ratio:16/10;box-shadow:var(--bev-in)">
+                    <image-slot id="{{ p.slot }}" shape="rect" placeholder="Drop an image"></image-slot>
+                  </div>
+                  <div style="padding:11px 6px 6px">
+                    <div style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3);margin-bottom:6px">{{ p.tag }}</div>
+                    <div style="font-size:13px;font-weight:700;line-height:1.35">{{ p.title }}</div>
+                    <div style="font-size:12px;color:var(--ink-2);line-height:1.55;padding-top:5px">Placeholder description. One or two lines on what the project does and what made it interesting to build.</div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isCv }}">
+          <div style="padding:clamp(20px,3vw,32px)">
+            <div style="background:var(--chrome);border:1px solid var(--line);box-shadow:var(--drop)">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:7px 9px;border-bottom:1px solid var(--line)">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-family:Silkscreen,monospace;font-size:10px;font-weight:700">CV 2026.pdf</span>
+                  <span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3)">2 pages</span>
+                </div>
+                <a href="assets/allen-lu-cv-2026.pdf" download="Allen-Lu-CV-2026.pdf" style="text-decoration:none;padding:5px 13px;background:var(--sel);color:var(--sel-ink);border:1px solid var(--line);box-shadow:inset 1px 1px 0 rgba(255,255,255,.3);font-family:Silkscreen,monospace;font-size:10px">Download</a>
+              </div>
+              <div style="padding:9px;background:var(--panel)">
+                <iframe src="assets/allen-lu-cv-2026.pdf#view=FitH" title="Allen Lu CV 2026" style="display:block;width:100%;height:min(78vh,900px);border:1px solid var(--line);background:#fff;box-shadow:var(--bev-in)"></iframe>
+              </div>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isBlog }}">
+          <div style="padding:clamp(26px,4vw,48px) clamp(20px,4vw,52px)">
+            <div style="font-family:Silkscreen,monospace;font-size:11px;font-weight:700;margin-bottom:8px">WRITING</div>
+            <p style="font-size:13px;color:var(--ink-2);margin:0 0 28px;max-width:60ch">Profiler traces, compilation failures, and things I built to understand something. Mostly the second one.</p>
+            <div style="border:1px solid var(--line);box-shadow:var(--bev-in);background:var(--win)">
+              <div style="display:grid;grid-template-columns:minmax(0,92px) minmax(0,1fr) minmax(0,110px);gap:14px;padding:8px 14px;background:var(--panel);border-bottom:1px solid var(--line)">
+                <span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3)">DATE</span>
+                <span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3)">TITLE</span>
+                <span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3)">TOPIC</span>
+              </div>
+              <sc-for list="{{ posts }}" as="p" hint-placeholder-count="5">
+                <div onClick="{{ p.go }}" style="cursor:pointer;display:grid;grid-template-columns:minmax(0,92px) minmax(0,1fr) minmax(0,110px);gap:14px;padding:13px 14px;border-bottom:1px solid var(--line-soft);background:{{ p.bg }}">
+                  <span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3);padding-top:3px">{{ p.date }}</span>
+                  <div style="min-width:0">
+                    <div style="font-size:13px;font-weight:700;line-height:1.4">{{ p.title }}</div>
+                    <div style="font-size:12px;color:var(--ink-2);line-height:1.55;padding-top:4px">{{ p.dek }}</div>
+                  </div>
+                  <span style="font-size:11px;color:var(--ink-3);padding-top:3px">{{ p.topic }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isPost }}">
+          <div style="padding:clamp(26px,4vw,48px) clamp(20px,4vw,52px);max-width:760px">
+            <div onClick="{{ goBlog }}" style="cursor:pointer;font-family:Silkscreen,monospace;font-size:10px;color:var(--accent);margin-bottom:24px">&lt; All posts</div>
+            <div style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3);margin-bottom:14px">MAR 2026 &middot; GPU PROFILING &middot; 9 MIN</div>
+            <h1 style="font-size:clamp(26px,3.6vw,40px);line-height:1.12;letter-spacing:-.02em;margin:0 0 22px;font-weight:700">45,000 kernel launches and one global flag</h1>
+            <p style="font-size:15px;line-height:1.8;margin:0 0 18px;color:var(--ink)">Placeholder body copy. A batch that should have issued a few hundred kernels was issuing forty-five thousand of them, and every one of those launches cost us the same fixed overhead on the host side. The GPU was not slow. It was waiting.</p>
+            <p style="font-size:15px;line-height:1.8;margin:0 0 26px;color:var(--ink-2)">Nsight Systems makes this kind of thing obvious once you know what shape to look for: a dense picket fence of tiny kernels with gaps between them, and a CPU timeline that is completely saturated. The interesting question is never whether the launches are there. It is which layer put them there.</p>
+            <div style="background:var(--panel);border:1px solid var(--line);box-shadow:var(--bev-in);padding:13px 15px;margin-bottom:26px">
+              <div style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;line-height:1.7;color:var(--ink)">nsys profile --stats=true python infer.py<br>&nbsp;&nbsp;&rarr; cudaLaunchKernel&nbsp;&nbsp;45,182 calls<br>&nbsp;&nbsp;&rarr; sm__issue_active&nbsp;&nbsp;&nbsp;&nbsp;17.2%</div>
+            </div>
+            <div style="border-left:3px solid var(--accent);padding:2px 0 2px 16px;margin:0 0 26px">
+              <p style="font-size:17px;line-height:1.6;margin:0;font-weight:700">The flag was global, the CUDA context was shared, and nobody had connected those two facts.</p>
+            </div>
+            <p style="font-size:15px;line-height:1.8;margin:0 0 26px;color:var(--ink-2)">Placeholder continuation. Two more paragraphs of the actual investigation go here, then the fix and the number it moved. Kernel count fell by 500&times;.</p>
+            <div style="background:var(--chrome);border:1px solid var(--line);box-shadow:var(--drop);padding:7px;margin-bottom:10px">
+              <div style="position:relative;width:100%;aspect-ratio:16/9;box-shadow:var(--bev-in)">
+                <image-slot id="post-figure" shape="rect" placeholder="Drop a profiler screenshot"></image-slot>
+              </div>
+              <div style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-2);padding-top:6px;text-align:center">fig-1-nsight-timeline.png</div>
+            </div>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{ isContact }}">
+          <div style="padding:clamp(26px,4vw,48px) clamp(20px,4vw,52px);max-width:640px">
+            <div style="font-family:Silkscreen,monospace;font-size:11px;font-weight:700;margin-bottom:8px">CONTACT</div>
+            <p style="font-size:13px;color:var(--ink-2);margin:0 0 26px">Email is the reliable one.</p>
+            <sc-for list="{{ contacts }}" as="c" hint-placeholder-count="3">
+              <a href="{{ c.href }}" style="text-decoration:none;color:var(--ink);display:grid;grid-template-columns:minmax(0,80px) minmax(0,1fr);gap:16px;align-items:center;padding:14px 16px;background:var(--chrome);border:1px solid var(--line);box-shadow:var(--bev-out);margin-bottom:10px">
+                <span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3)">{{ c.k }}</span>
+                <span style="font-size:13px;font-weight:700;word-break:break-all">{{ c.v }}</span>
+              </a>
+            </sc-for>
+          </div>
+          </sc-if>
+
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;padding:5px 10px;background:var(--chrome);border-top:1px solid var(--line);box-shadow:var(--bev-out)">
+        <span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-2)">{{ statusText }}</span>
+        <span style="font-family:Silkscreen,monospace;font-size:9px;color:var(--ink-3)">Allen Lu &middot; 2026</span>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;theme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;light&quot;,&quot;night&quot;],&quot;default&quot;:&quot;light&quot;,&quot;tsType&quot;:&quot;'light' | 'night'&quot;,&quot;section&quot;:&quot;Appearance&quot;},&quot;heroLayout&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;a&quot;,&quot;b&quot;],&quot;default&quot;:&quot;a&quot;,&quot;tsType&quot;:&quot;'a' | 'b'&quot;,&quot;section&quot;:&quot;Appearance&quot;}}">
+const SKILLS = ['Python','C++','CUDA','PyTorch','TensorRT','NVIDIA Triton','vLLM','SGLang','Nsight Systems','OpenAI Triton','DeepSpeed','Docker','Kubernetes','Prometheus','Grafana','FastAPI','AWS','Go'];
+
+const FACTS = [
+  { k: 'NOW', v: 'Software Engineer, ML Infrastructure at Ambient.AI' },
+  { k: 'BASED', v: 'San Diego, California' },
+  { k: 'FOCUS', v: 'GPU inference, model compilation, performance profiling' },
+  { k: 'STUDIED', v: 'M.S. CS, UC San Diego · B.S. CS, National Tsing Hua University' },
+  { k: 'EMAIL', v: 'chiaen119@gmail.com' }
+];
+
+const TIMELINE = [
+  { kind: 'work', org: 'Ambient.AI', role: 'Software Engineer, ML Infrastructure', dates: 'FEB 2026 — PRESENT', bullets: [
+    'Migrated an 11-model real-time CV pipeline from monolithic PyTorch to NVIDIA Triton, enabling independent GPU memory management and concurrent execution.',
+    'Cut multi-model inference latency 33% with a pipeline-parallel scheduler, and tensor transport 18× via shared-memory transport.',
+    'Reduced cloud inference cost 80% with scale-to-zero autoscaling for idle model replicas.'
+  ] },
+  { kind: 'work', org: 'GenseeAI Inc.', role: 'Research Intern, AI Systems & Infrastructure', dates: 'JUN 2025 — SEP 2025', bullets: [
+    'Architected a sandboxed AI agent execution environment on Docker and AWS ECS/ECR, cutting container startup latency 40%.',
+    'Co-developed a full-stack agent serving platform with multi-turn sessions, tool execution, and per-session usage tracking.'
+  ] },
+  { kind: 'edu', org: 'UC San Diego', role: 'M.S. Computer Science', dates: 'SEP 2024 — DEC 2025', bullets: [
+    'Graduate researcher at Shang Data Lab and the Swartz Center for Computational Neuroscience.'
+  ] },
+  { kind: 'work', org: 'Taiwan AI Labs', role: 'Software Engineer Intern, Algorithm Team', dates: 'JUN 2024 — AUG 2024', bullets: [
+    'Improved Truku translation quality 14% (BLEU 28 → 32) and cut training time 13% with Dynamic Data Selection.',
+    'Reached BLEU 37.5 on medical-domain translation via retrieval-augmented data augmentation.'
+  ] },
+  { kind: 'edu', org: 'National Tsing Hua University', role: 'B.S. Computer Science · Hsinchu, Taiwan', dates: 'SEP 2019 — JUN 2023', bullets: [] }
+];
+
+const POSTS = [
+  { date: 'MAR 2026', title: '45,000 kernel launches and one global flag', dek: 'A picket fence in the Nsight timeline, and the shared CUDA context that explained it.', topic: 'Profiling' },
+  { date: 'FEB 2026', title: 'Eleven graph breaks: chasing a 24× inference regression', dek: '17 ms became 410 ms. Full-graph compilation was never happening.', topic: 'Compilation' },
+  { date: 'JAN 2026', title: 'A token-merging patch that made compilation 480× slower', dek: '25 ms to twelve seconds, inside a Vision Transformer integration.', topic: 'Compilation' },
+  { date: 'NOV 2025', title: 'Reading Nsight like a map', dek: 'The four shapes I look for before touching any code.', topic: 'Profiling' },
+  { date: 'SEP 2025', title: 'Writing a matmul that beats BLAS', dek: 'Cache-aware SIMD microkernels, packing, and why powers of two hurt.', topic: 'Projects' }
+];
+
+const PROJECTS = [1,2,3,4,5,6].map(function (n) {
+  return { slot: 'project-' + n, tag: 'PLACEHOLDER 0' + n, title: 'Project title ' + n };
+});
+
+const CONTACTS = [
+  { k: 'EMAIL', v: 'chiaen119@gmail.com', href: 'mailto:chiaen119@gmail.com' },
+  { k: 'GITHUB', v: 'github.com/allenlu', href: 'https://github.com' },
+  { k: 'LINKEDIN', v: 'linkedin.com/in/allenlu', href: 'https://linkedin.com' }
+];
+
+const TITLES = {
+  home: 'Allen Lu — Home',
+  experience: 'Experience',
+  projects: 'Projects',
+  cv: 'CV 2026.pdf',
+  blog: 'Writing',
+  post: 'Writing — post',
+  contact: 'Contact'
+};
+
+class Component extends DCLogic {
+  state = { section: 'home', theme: null, variant: null, prev: null };
+
+  get theme() { return this.state.theme ?? this.props.theme ?? 'light'; }
+  get variant() { return this.state.variant ?? this.props.heroLayout ?? 'a'; }
+
+  nav(section) {
+    this.setState({ section: section, prev: this.state.section });
+    if (typeof window !== 'undefined') window.scrollTo(0, 0);
+  }
+
+  renderVals() {
+    const s = this.state.section;
+    const sel = 'var(--sel)';
+    const selInk = 'var(--sel-ink)';
+    const self = this;
+
+    const item = (label, key) => ({
+      label: label,
+      go: () => self.nav(key),
+      bg: s === key ? sel : 'transparent',
+      fg: s === key ? selInk : 'var(--ink)'
+    });
+
+    return {
+      theme: this.theme,
+      themeLabel: this.theme === 'night' ? 'Day' : 'Night',
+      toggleTheme: () => this.setState({ theme: this.theme === 'night' ? 'light' : 'night' }),
+      windowTitle: TITLES[s] || 'Allen Lu',
+      statusText: (s === 'home' ? '7 items' : TITLES[s]) + ' — chiaen119@gmail.com',
+
+      isHome: s === 'home',
+      isExperience: s === 'experience',
+      isProjects: s === 'projects',
+      isCv: s === 'cv',
+      isBlog: s === 'blog',
+      isPost: s === 'post',
+      isContact: s === 'contact',
+
+      goHome: () => this.nav('home'),
+      goCv: () => this.nav('cv'),
+      goBlog: () => this.nav('blog'),
+      goBack: () => this.nav(this.state.prev || 'home'),
+
+      sidebar: [
+        { label: 'ONE PAGE', items: [item('Home (full scroll)', 'home')] },
+        { label: 'PAGES', items: [item('Experience', 'experience'), item('Projects', 'projects'), item('Writing', 'blog'), item('Contact', 'contact')] },
+        { label: 'FILES', items: [item('CV 2026.pdf', 'cv')] }
+      ],
+
+      isVariantA: this.variant === 'a',
+      isVariantB: this.variant === 'b',
+      variants: ['a', 'b'].map(v => ({
+        label: v.toUpperCase(),
+        go: () => this.setState({ variant: v }),
+        bg: this.variant === v ? sel : 'var(--chrome)',
+        fg: this.variant === v ? selInk : 'var(--ink-2)'
+      })),
+
+      skills: SKILLS,
+      facts: FACTS,
+      projects: PROJECTS,
+      contacts: CONTACTS,
+
+      timeline: TIMELINE.map(t => ({
+        org: t.org, role: t.role, dates: t.dates, bullets: t.bullets,
+        isWork: t.kind === 'work',
+        isEdu: t.kind === 'edu',
+        nodeBg: t.kind === 'work' ? 'var(--ink)' : 'var(--win)'
+      })),
+
+      posts: POSTS.map((p, i) => ({
+        date: p.date, title: p.title, dek: p.dek, topic: p.topic,
+        bg: i % 2 ? 'var(--panel)' : 'transparent',
+        go: () => this.nav('post')
+      })),
+
+      recentPosts: POSTS.slice(0, 3).map((p, i) => ({
+        date: p.date, title: p.title, dek: p.dek,
+        bg: i % 2 ? 'var(--panel)' : 'transparent',
+        go: () => this.nav('post')
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

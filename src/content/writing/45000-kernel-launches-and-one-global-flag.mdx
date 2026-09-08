@@ -1,0 +1,24 @@
+---
+title: "45,000 kernel launches and one global flag"
+date: 2026-03-15
+dek: "A picket fence in the Nsight timeline, and the shared CUDA context that explained it."
+topic: Profiling
+minutes: 9
+---
+import Figure from '../../components/Figure.astro';
+
+Placeholder body copy. A batch that should have issued a few hundred kernels was issuing forty-five thousand of them, and every one of those launches cost us the same fixed overhead on the host side. The GPU was not slow. It was waiting.
+
+Nsight Systems makes this kind of thing obvious once you know what shape to look for: a dense picket fence of tiny kernels with gaps between them, and a CPU timeline that is completely saturated. The interesting question is never whether the launches are there. It is which layer put them there.
+
+```
+nsys profile --stats=true python infer.py
+  → cudaLaunchKernel  45,182 calls
+  → sm__issue_active    17.2%
+```
+
+> The flag was global, the CUDA context was shared, and nobody had connected those two facts.
+
+Placeholder continuation. Two more paragraphs of the actual investigation go here, then the fix and the number it moved. Kernel count fell by 500×.
+
+<Figure aspect="16/9" placeholder="Drop a profiler screenshot" caption="fig-1-nsight-timeline.png" alt="Nsight Systems timeline" />
