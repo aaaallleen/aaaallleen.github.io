@@ -113,6 +113,7 @@ const searchText = (r: FinderRow) => [r.name, r.kind ?? '', ...(r.tags ?? [])].j
 
   /* Column headers */
   .thead { background: var(--panel); border-bottom: 1px solid var(--line); position: sticky; top: 26px; z-index: 1; }
+  @media (min-width: 761px) { .thead { top: 0; } } /* the window's content area is the scroller */
   .th-cell { display: flex; }
   .th-cell:not(:first-child) { border-left: 1px solid var(--line-soft); margin-left: -7px; padding-left: 7px; }
   .th {

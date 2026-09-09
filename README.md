@@ -178,6 +178,9 @@ The window chrome is functional, not decorative. All of it lives in `src/scripts
   behind it shows three icons in the centre of the screen: the site, which restores the window if
   it was minimized or relaunches it on Home if it was closed; a Writing folder, which opens as a
   Finder-style folder window; and the CV, which opens the CV page. Zoom fills the viewport width.
+- **Windows keep one size.** On desktop widths the window is sized to the viewport and its content
+  scrolls inside, with the sidebar fixed, so switching between a long page and a short one never
+  resizes the frame. Phones keep a flowing layout where the page itself scrolls.
 - **Drag a window by its title bar** to move it (not when zoomed, and not on phones, where the
   window is full width). The position is kept for the rest of the visit; double-click the title
   bar to re-center. A window can never be dragged out of reach.

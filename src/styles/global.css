@@ -64,15 +64,30 @@ button { font: inherit; color: inherit; }
 img { display: block; max-width: 100%; }
 
 html.is-zoomed body { padding-bottom: 0; }
+@media (min-width: 761px) { body { padding-bottom: 0; } } /* the window is sized to the viewport; the page itself does not scroll */
+
+/* Retro scrollbars inside window content (WebKit); Firefox gets themed colours. */
+[data-window-el] .content::-webkit-scrollbar { width: 14px; height: 14px; }
+[data-window-el] .content::-webkit-scrollbar-track { background: var(--panel); border-left: 1px solid var(--line); }
+[data-window-el] .content::-webkit-scrollbar-thumb {
+  background: var(--chrome);
+  border: 1px solid var(--line);
+  box-shadow: var(--bev-out);
+}
+[data-window-el] .content::-webkit-scrollbar-thumb:hover { background: var(--chrome-2); }
+@supports not selector(::-webkit-scrollbar) {
+  [data-window-el] .content { scrollbar-color: var(--chrome-2) var(--panel); }
+}
 
 /* Zoom (green light): whichever window is on the page fills the viewport. */
 html.is-zoomed .desk { max-width: none; padding: 0; }
 html.is-zoomed [data-window-el] {
   display: flex; flex-direction: column;
   min-height: calc(100vh - 26px);
-  border-left: 0; border-right: 0;
+  border-left: 0; border-right: 0; border-bottom: 0;
   box-shadow: none;
 }
+@media (min-width: 761px) { html.is-zoomed .desk { height: calc(100vh - 26px); } }
 html.is-zoomed [data-window-el] > .body { flex: 1; }
 html.is-zoomed [data-window-el] { transform: none !important; }
 body.is-dragging, body.is-dragging * { cursor: grabbing !important; }

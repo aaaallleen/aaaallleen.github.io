@@ -65,11 +65,10 @@ const { title, icon = 'folder', tabTitle = `${title} · Writing · ${site.name}`
   .desk {
     max-width: 960px;
     margin: 0 auto;
-    padding: clamp(18px, 5vw, 56px) clamp(10px, 3vw, 32px) 0;
+    padding: clamp(18px, 4vw, 44px) clamp(10px, 3vw, 32px) 0; /* same vertical rhythm as the site window */
   }
   .window {
     display: flex; flex-direction: column;
-    min-height: min(560px, calc(100vh - 26px - 2 * clamp(18px, 5vw, 56px)));
     background: var(--chrome);
     border: 1px solid var(--line);
     box-shadow: var(--drop);
@@ -95,12 +94,23 @@ const { title, icon = 'folder', tabTitle = `${title} · Writing · ${site.name}`
   }
   .search input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
   .body {
-    flex: 1;
+    flex: 1; min-height: 0;
     display: grid;
     grid-template-columns: minmax(0, 176px) minmax(0, 1fr);
     align-items: stretch;
   }
   .content { background: var(--win); min-width: 0; }
+
+  /* Desktop widths: one window size, list scrolls inside. */
+  @media (min-width: 761px) {
+    .desk {
+      height: calc(100vh - 26px);
+      padding-bottom: clamp(14px, 3vw, 28px);
+      display: flex; flex-direction: column;
+    }
+    .window { flex: 1; min-height: 0; }
+    .content { overflow-y: auto; overscroll-behavior: contain; }
+  }
   .statusbar {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;
     padding: 5px 10px;
