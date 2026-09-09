@@ -9,3 +9,8 @@ export function readingTime(body: string | undefined, fallback?: number): number
   const words = (body ?? '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
   return Math.max(1, Math.round(words / 200));
 }
+
+/** "MAR 15, 2026" — full date for the Finder-style list's DATE ADDED column. */
+export function fullDate(d: Date): string {
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' }).toUpperCase();
+}

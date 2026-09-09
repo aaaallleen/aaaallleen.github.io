@@ -1,8 +1,9 @@
 ---
 /**
  * The desktop behind the window, visible whenever the window is minimized or
- * closed: the site as an app icon (opens / restores the one window) and the CV
- * as a file (opens the CV page). Centered on screen, like a tidy desktop.
+ * closed: the site as an app icon (opens / restores the one window), a Writing
+ * folder (opens the sortable post list) and the CV as a file (opens the CV
+ * page). Centered on screen, like a tidy desktop.
  */
 import { site } from '../site.config';
 import { url } from '../lib/url';
@@ -28,6 +29,20 @@ import { url } from '../lib/url';
       </svg>
     </span>
     <span class="label">{site.brand}</span>
+  </button>
+
+  <button class="icon" type="button" data-icon="file" data-href={url('/writing/')} aria-pressed="false" aria-label="Writing folder — open">
+    <span class="art" aria-hidden="true">
+      <svg viewBox="0 0 48 48" width="48" height="48">
+        <path d="M4.5 10.5h14l3 4h22v27h-39z" fill="var(--chrome-2)" stroke="var(--ink)" />
+        <path d="M17.5 5.5h13v9h-13z" fill="var(--win)" stroke="var(--ink)" />
+        <rect x="20" y="8" width="8" height="1.2" fill="var(--ink-3)" />
+        <rect x="20" y="10.5" width="6" height="1.2" fill="var(--ink-3)" />
+        <path d="M4.5 17.5h39v24h-39z" fill="var(--chrome)" stroke="var(--ink)" />
+        <rect x="4.5" y="17.5" width="39" height="3" fill="var(--title-b)" />
+      </svg>
+    </span>
+    <span class="label">Writing</span>
   </button>
 
   <button class="icon" type="button" data-icon="file" data-href={url('/cv/')} aria-pressed="false" aria-label={`${site.cv.label} — open`}>
@@ -63,11 +78,11 @@ import { url } from '../lib/url';
   :global(body[data-window="closed"]) .desktop,
   :global(body[data-window="minimized"]) .desktop { display: flex; }
   @keyframes desk-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
-  .icons { display: flex; align-items: flex-start; gap: 28px; }
+  .icons { display: flex; align-items: flex-start; justify-content: center; flex-wrap: wrap; gap: 16px; }
 
   .icon {
     display: flex; flex-direction: column; align-items: center; gap: 6px;
-    width: 96px; padding: 6px 4px;
+    width: 112px; padding: 6px 4px;
     background: none; border: 0;
     cursor: default;
     appearance: none;
@@ -76,6 +91,7 @@ import { url } from '../lib/url';
   .art { display: block; filter: drop-shadow(2px 2px 0 rgba(0,0,0,.25)); }
   .label {
     font-size: 11px; line-height: 1.3;
+    max-width: 100%; overflow-wrap: anywhere; text-align: center;
     padding: 1px 6px;
     background: var(--win);
     border: 1px solid var(--line);

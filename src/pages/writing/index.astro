@@ -1,24 +1,18 @@
 ---
-import Desktop from '../../layouts/Desktop.astro';
-import TagFilter from '../../components/TagFilter.astro';
-import PostList from '../../components/PostList.astro';
+/** The Writing folder: a Finder window listing every post. */
+import Finder from '../../layouts/Finder.astro';
+import FinderList from '../../components/FinderList.astro';
 import { getPosts } from '../../lib/posts';
 import { collectTags } from '../../lib/tags';
+import { postRows } from '../../lib/postRows';
+import { sortStatus } from '../../lib/finder';
 
 const posts = await getPosts();
 const tags = collectTags(posts);
+const rows = postRows(posts);
 ---
-<Desktop section="blog" description="Writing by Allen Lu on GPU profiling, model compilation, and systems.">
-  <div class="page">
-    <h1 class="section-title tight">WRITING</h1>
-    <p class="intro">Profiler traces, compilation failures, and things I built to understand something. Mostly the second one.</p>
-    <TagFilter tags={tags} total={posts.length} />
-    <PostList posts={posts} />
-  </div>
-</Desktop>
-
-<style>
-  .page { padding: var(--pad-y-page) var(--pad-x); }
-  .tight { margin-bottom: 8px; }
-  .intro { font-size: 13px; color: var(--ink-2); margin: 0 0 22px; max-width: 60ch; }
-</style>
+<Finder title="Writing" tabTitle="Writing · Allen Lu" tags={tags} activeItem="writing"
+  status={sortStatus(rows.length, 'date', 'desc', 'DATE ADDED')}
+  description="Writing by Allen Lu on GPU profiling, model compilation, poker, and whatever else is on his mind.">
+  <FinderList rows={rows} sortKey="writing" />
+</Finder>

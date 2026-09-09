@@ -1,0 +1,299 @@
+---
+/**
+ * Finder list view: one line per item with configurable columns.
+ *  - Click a column header to sort, again to reverse (remembered per folder).
+ *  - Single click selects a row, double-click opens it; keyboard (Enter on the
+ *    focused name), touch and modified clicks open directly. Arrows move.
+ *  - Sorting by Tags follows Finder: tags in the order the author wrote them,
+ *    so the first tag is the primary one; later tags break ties, then date.
+ *  - A toolbar search box ([data-list-search]) filters rows by any column text.
+ */
+import { fullDate } from '../lib/format';
+import { tagColor } from '../lib/tags';
+import { COLUMN_TRACK, DEFAULT_DIR, sortKey, sortRows, type ColumnKey, type Dir, type FinderRow } from '../lib/finder';
+
+interface Props {
+  rows: FinderRow[];
+  columns?: ColumnKey[];
+  /** Header label overrides, e.g. { date: 'DATE MODIFIED' }. */
+  labels?: Partial<Record<ColumnKey, string>>;
+  /** localStorage key suffix so each folder remembers its own sort. */
+  sortKey: string;
+  defaultSort?: { col: ColumnKey; dir: Dir };
+  emptyText?: string;
+}
+const {
+  rows,
+  columns = ['name', 'date', 'tags'],
+  labels = {},
+  sortKey: storageKey,
+  defaultSort = { col: 'date', dir: 'desc' },
+  emptyText = 'This folder is empty.',
+} = Astro.props;
+
+const LABEL: Record<ColumnKey, string> = { name: 'NAME', date: 'DATE ADDED', tags: 'TAGS', kind: 'KIND', ...labels };
+const sorted = sortRows(rows, defaultSort.col, defaultSort.dir);
+const tracks = columns.map((c) => COLUMN_TRACK[c]).join(' ');
+const tracksMobile = columns.slice(0, 2).map((c) => COLUMN_TRACK[c]).join(' ');
+const searchText = (r: FinderRow) => [r.name, r.kind ?? '', ...(r.tags ?? [])].join(' ').toLowerCase();
+---
+<div
+  class="list"
+  role="table"
+  aria-label="Items"
+  data-postlist
+  data-sort-key={storageKey}
+  style={`--cols:${tracks};--cols-m:${tracksMobile}`}
+>
+  <div role="rowgroup">
+    <div class="thead" role="row">
+      {columns.map((c) => (
+        <div
+          role="columnheader"
+          class="th-cell"
+          aria-sort={c === defaultSort.col ? (defaultSort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+        >
+          <button class="px th" type="button" data-sort={c} data-default-dir={DEFAULT_DIR[c]} title={`Sort by ${LABEL[c].toLowerCase()}`}>
+            {LABEL[c]}<span class="arrow" aria-hidden="true"></span>
+          </button>
+        </div>
+      ))}
+    </div>
+  </div>
+
+  <div class="rows" role="rowgroup" data-rows>
+    {sorted.map((r) => (
+      <div
+        class="row"
+        role="row"
+        aria-selected="false"
+        data-href={r.href}
+        data-search={searchText(r)}
+        data-name={sortKey(r, 'name')}
+        data-date={sortKey(r, 'date')}
+        data-tags={sortKey(r, 'tags')}
+        data-kind={sortKey(r, 'kind')}
+      >
+        {columns.map((c) => {
+          if (c === 'name') return (
+            <div role="cell" class="name">
+              <span class:list={['ico', r.icon]} aria-hidden="true">
+                {r.icon === 'doc' && <svg viewBox="0 0 12 14"><path d="M.5.5h7l4 4v9h-11z" fill="var(--win)" stroke="currentColor" /><path d="M7.5.5v4h4" fill="var(--panel)" stroke="currentColor" /></svg>}
+                {r.icon === 'pdf' && <svg viewBox="0 0 12 14"><path d="M.5.5h7l4 4v9h-11z" fill="var(--win)" stroke="currentColor" /><path d="M7.5.5v4h4" fill="var(--panel)" stroke="currentColor" /><rect x="2" y="8" width="8" height="3.5" fill="var(--sel)" /></svg>}
+                {r.icon === 'folder' && <svg viewBox="0 0 14 12"><path d="M.5 1.5h5l1.5 2h6.5v8H.5z" fill="var(--chrome-2)" stroke="currentColor" /><path d="M.5 4.5h13v7H.5z" fill="var(--chrome)" stroke="currentColor" /></svg>}
+                {r.icon === 'app' && <svg viewBox="0 0 14 12"><rect x=".5" y=".5" width="13" height="11" fill="var(--win)" stroke="currentColor" /><rect x=".5" y=".5" width="13" height="3" fill="var(--title-b)" stroke="currentColor" /><rect x="2" y="1.5" width="1.5" height="1.5" fill="#FF5F57" /><rect x="4.5" y="1.5" width="1.5" height="1.5" fill="#FEBC2E" /><rect x="7" y="1.5" width="1.5" height="1.5" fill="#28C840" /><rect x="2" y="6" width="5" height="1.5" fill="var(--ink)" /></svg>}
+              </span>
+              <a class="file" href={r.href} title={r.tooltip}>{r.name}</a>
+            </div>
+          );
+          if (c === 'date') return <div role="cell" class="px date">{r.date ? fullDate(r.date) : '—'}</div>;
+          if (c === 'kind') return <div role="cell" class="kind">{r.kind ?? '—'}</div>;
+          return (
+            <div role="cell" class="tags">
+              {r.tags && r.tags.length > 0 && (
+                <span class="dots" aria-hidden="true">
+                  {r.tags.map((t) => <i class="dot" style={`--c:${tagColor(t)}`}></i>)}
+                </span>
+              )}
+              <span class="names">{(r.tags ?? []).join(', ')}</span>
+            </div>
+          );
+        })}
+      </div>
+    ))}
+  </div>
+
+  <p class="empty" data-empty hidden={sorted.length > 0}>{emptyText}</p>
+  <p class="empty" data-no-match hidden>No items match.</p>
+</div>
+
+<style>
+  .list { background: var(--win); min-height: 100%; }
+  .thead, .row { display: grid; grid-template-columns: var(--cols); gap: 14px; }
+
+  /* Column headers */
+  .thead { background: var(--panel); border-bottom: 1px solid var(--line); position: sticky; top: 26px; z-index: 1; }
+  .th-cell { display: flex; }
+  .th-cell:not(:first-child) { border-left: 1px solid var(--line-soft); margin-left: -7px; padding-left: 7px; }
+  .th {
+    flex: 1; display: flex; align-items: center;
+    padding: 7px 14px; margin: 0;
+    background: none; border: 0;
+    font-size: 9px; color: var(--ink-3); text-align: left;
+    cursor: pointer; appearance: none;
+  }
+  .th-cell:not(:first-child) .th { padding-left: 0; }
+  .th:hover { color: var(--ink); }
+  .th-cell:not([aria-sort="none"]) { background: rgba(0,0,0,.06); }
+  .th-cell:not([aria-sort="none"]) .th { color: var(--ink); }
+  .arrow {
+    display: inline-block; width: 0; height: 0; margin-left: 6px;
+    border-left: 3px solid transparent; border-right: 3px solid transparent;
+    visibility: hidden;
+  }
+  [aria-sort="ascending"] .arrow { border-bottom: 4px solid currentColor; visibility: visible; }
+  [aria-sort="descending"] .arrow { border-top: 4px solid currentColor; visibility: visible; }
+
+  /* Rows */
+  .row { padding: 6px 14px; align-items: center; cursor: default; user-select: none; }
+  .row:nth-of-type(even) { background: var(--panel); }
+  .row[aria-selected="true"] { background: var(--sel); color: var(--sel-ink); }
+  .row[aria-selected="true"] .date, .row[aria-selected="true"] .names, .row[aria-selected="true"] .kind { color: var(--sel-ink); }
+  .name { display: flex; align-items: center; gap: 9px; min-width: 0; }
+  .ico { display: inline-flex; width: 14px; height: 14px; flex: 0 0 auto; color: var(--ink-2); }
+  .ico svg { width: 100%; height: 100%; }
+  .row[aria-selected="true"] .ico { color: var(--sel-ink); }
+  .file {
+    font-size: 12px; line-height: 1.5; color: inherit; text-decoration: none;
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .file:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .row[aria-selected="true"] .file:focus-visible { outline-color: var(--sel-ink); }
+  .date { font-size: 9px; color: var(--ink-3); white-space: nowrap; }
+  .kind { font-size: 11px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tags { display: flex; align-items: center; gap: 7px; min-width: 0; }
+  .dots { display: inline-flex; flex: 0 0 auto; }
+  .dots .dot { margin-left: -3px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 0 0 1px var(--win); }
+  .dots .dot:first-child { margin-left: 0; }
+  .row:nth-of-type(even) .dots .dot { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 0 0 1px var(--panel); }
+  .names { font-size: 11px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  .empty { margin: 0; padding: 22px 14px; font-size: 12px; color: var(--ink-2); }
+
+  @media (max-width: 640px) {
+    .thead, .row { grid-template-columns: var(--cols-m); }
+    .thead > :nth-child(n + 3), .row > :nth-child(n + 3) { display: none; }
+    .row { padding: 8px 12px; }
+  }
+</style>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  type Dir = 'asc' | 'desc';
+  const coarse = matchMedia('(pointer: coarse)');
+  const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+  const dirText = (col: string, dir: Dir) =>
+    col === 'date' ? (dir === 'asc' ? 'oldest first' : 'newest first') : dir === 'asc' ? 'A to Z' : 'Z to A';
+
+  // Clicking outside any list clears its selection (one listener for the whole visit).
+  document.addEventListener('click', (e) => {
+    if ((e.target as Element).closest('[data-postlist]')) return;
+    document.querySelectorAll('[data-postlist] .row[aria-selected="true"]').forEach((r) => r.setAttribute('aria-selected', 'false'));
+  });
+
+  // Pages are swapped in place by the client router, so bind per page-load.
+  document.addEventListener('astro:page-load', () => document.querySelectorAll<HTMLElement>('[data-postlist]').forEach(setup));
+
+  function setup(list: HTMLElement) {
+    const rowsEl = list.querySelector<HTMLElement>('[data-rows]');
+    if (!rowsEl) return;
+    const rows = () => Array.from(rowsEl.children) as HTMLElement[];
+    const headers = Array.from(list.querySelectorAll<HTMLButtonElement>('[data-sort]'));
+    const status = document.querySelector<HTMLElement>('[data-sort-status]');
+    const search = document.querySelector<HTMLInputElement>('[data-list-search]');
+    const noMatch = list.querySelector<HTMLElement>('[data-no-match]');
+    const KEY = `finder-sort:${list.dataset.sortKey ?? 'default'}`;
+    const cols = headers.map((h) => h.dataset.sort!);
+    const labelOf = (c: string) =>
+      (headers.find((h) => h.dataset.sort === c)?.textContent ?? c).trim().toLowerCase().replace(/\b\w/g, (m) => m.toUpperCase());
+
+    /* ---- sort ---- */
+    // Server-rendered default is whichever header carries aria-sort.
+    const initial = headers.find((h) => h.parentElement?.getAttribute('aria-sort') !== 'none');
+    let col = initial?.dataset.sort ?? cols[0];
+    let dir: Dir = initial?.parentElement?.getAttribute('aria-sort') === 'ascending' ? 'asc' : 'desc';
+    const serverCol = col, serverDir = dir;
+    try {
+      const saved = JSON.parse(localStorage.getItem(KEY) ?? 'null');
+      if (saved && cols.includes(saved.col) && (saved.dir === 'asc' || saved.dir === 'desc')) ({ col, dir } = saved);
+    } catch {}
+
+    const key = (row: HTMLElement, c: string) => row.dataset[c] ?? '';
+    const cmp = (a: HTMLElement, b: HTMLElement, c: string) => collator.compare(key(a, c), key(b, c));
+
+    function updateStatus() {
+      if (!status) return;
+      const all = rows();
+      const shown = all.filter((r) => !r.hidden).length;
+      const count = shown === all.length ? `${all.length} ${all.length === 1 ? 'item' : 'items'}` : `${shown} of ${all.length} items`;
+      status.textContent = `${count} · sorted by ${labelOf(col)}, ${dirText(col, dir)}`;
+    }
+
+    function applySort() {
+      rows()
+        .sort((a, b) => {
+          let r = cmp(a, b, col);
+          if (dir === 'desc') r = -r;
+          if (r === 0 && col !== 'date') r = -cmp(a, b, 'date'); // ties: newest first
+          return r;
+        })
+        .forEach((r) => rowsEl!.appendChild(r));
+      headers.forEach((h) => {
+        const active = h.dataset.sort === col;
+        h.parentElement?.setAttribute('aria-sort', active ? (dir === 'asc' ? 'ascending' : 'descending') : 'none');
+      });
+      updateStatus();
+    }
+
+    headers.forEach((h) =>
+      h.addEventListener('click', () => {
+        const c = h.dataset.sort!;
+        if (c === col) dir = dir === 'asc' ? 'desc' : 'asc';
+        else { col = c; dir = (h.dataset.defaultDir as Dir) ?? 'asc'; }
+        try { localStorage.setItem(KEY, JSON.stringify({ col, dir })); } catch {}
+        applySort();
+      }),
+    );
+
+    /* ---- search ---- */
+    search?.addEventListener('input', () => {
+      const q = search.value.trim().toLowerCase();
+      let shown = 0;
+      rows().forEach((r) => {
+        const hit = !q || (r.dataset.search ?? '').includes(q);
+        r.hidden = !hit;
+        if (hit) shown++;
+        else r.setAttribute('aria-selected', 'false');
+      });
+      if (noMatch) noMatch.hidden = shown > 0 || rows().length === 0;
+      updateStatus();
+    });
+
+    /* ---- select / open ---- */
+    const select = (row: HTMLElement | null) => rows().forEach((r) => r.setAttribute('aria-selected', String(r === row)));
+    const open = (row: HTMLElement) => { if (row.dataset.href) void navigate(row.dataset.href); };
+
+    rowsEl.addEventListener('click', (e) => {
+      const row = (e.target as Element).closest<HTMLElement>('.row');
+      if (!row) return;
+      const onLink = (e.target as Element).closest('a');
+      // Keyboard activation (Enter on the name), touch, or modified clicks open directly.
+      if (onLink && (e.detail === 0 || coarse.matches || e.metaKey || e.ctrlKey || e.shiftKey)) return;
+      e.preventDefault();
+      select(row);
+    });
+    rowsEl.addEventListener('dblclick', (e) => {
+      const row = (e.target as Element).closest<HTMLElement>('.row');
+      if (row) open(row);
+    });
+    rowsEl.addEventListener('keydown', (e) => {
+      if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+      const visible = rows().filter((r) => !r.hidden);
+      const current = (e.target as Element).closest<HTMLElement>('.row');
+      const i = current ? visible.indexOf(current) : -1;
+      const next = visible[e.key === 'ArrowDown' ? Math.min(i + 1, visible.length - 1) : Math.max(i - 1, 0)];
+      next?.querySelector<HTMLElement>('a')?.focus();
+      if (next) select(next);
+      e.preventDefault();
+    });
+    rowsEl.addEventListener('focusin', (e) => {
+      const row = (e.target as Element).closest<HTMLElement>('.row');
+      if (row) select(row);
+    });
+
+    // Only reorder if the remembered sort differs from what the server rendered.
+    if (col !== serverCol || dir !== serverDir) applySort();
+    else updateStatus();
+  }
+</script>

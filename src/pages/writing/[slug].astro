@@ -5,7 +5,7 @@ import Desktop from '../../layouts/Desktop.astro';
 import { getPosts } from '../../lib/posts';
 import { monthYear, readingTime } from '../../lib/format';
 import { url } from '../../lib/url';
-import { tagSlug } from '../../lib/tags';
+import { tagSlug, tagColor } from '../../lib/tags';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -25,7 +25,7 @@ const meta = [monthYear(post.data.date), ...tags.map((t) => t.toUpperCase()), `$
   description={post.data.dek}
 >
   <article class="post">
-    <a class="px back" href={url('/writing/')}>&lt; All posts</a>
+    <a class="px back" href={url('/writing/')}>&lt; Writing folder</a>
     <div class="px meta">{meta}</div>
     <h1>{post.data.title}</h1>
     <div class="prose">
@@ -35,7 +35,7 @@ const meta = [monthYear(post.data.date), ...tags.map((t) => t.toUpperCase()), `$
       <footer class="tags">
         <span class="px tags-label">TAGS</span>
         {tags.map((t) => (
-          <a class="tag-chip" href={url(`/writing/tag/${tagSlug(t)}/`)}>{t}</a>
+          <a class="tag-chip" href={url(`/writing/tag/${tagSlug(t)}/`)}><i class="dot" style={`--c:${tagColor(t)}`} aria-hidden="true"></i>{t}</a>
         ))}
       </footer>
     )}

@@ -1,0 +1,71 @@
+---
+/** Window title bar: traffic lights (wired to the window manager) and a centered title. */
+interface Props { title: string; icon?: 'folder' | 'home' }
+const { title, icon } = Astro.props;
+---
+<div class="titlebar" data-drag-handle>
+  <div class="lights">
+    <button class="light close" type="button" data-action="close" aria-label="Close window"><i class="glyph sq"></i></button>
+    <button class="light min" type="button" data-action="minimize" aria-label="Minimize window to the dock"><i class="glyph dash"></i></button>
+    <button class="light zoom" type="button" data-action="zoom" aria-label="Toggle fill screen"><i class="glyph corner"></i></button>
+  </div>
+  <div class="rail">
+    <span class="rule"></span>
+    <span class="px title">
+      {icon === 'folder' && (
+        <svg class="folder" viewBox="0 0 16 12" width="14" height="10" aria-hidden="true">
+          <path d="M.5 1.5h5l1.5 2h8.5v8H.5z" fill="var(--chrome-2)" stroke="var(--ink)" />
+          <path d="M.5 4.5h15v7H.5z" fill="var(--chrome)" stroke="var(--ink)" />
+        </svg>
+      )}
+      {icon === 'home' && (
+        <svg class="folder" viewBox="0 0 14 14" width="12" height="12" aria-hidden="true">
+          <path d="M1.5 7.5 7 2.5l5.5 5v5h-4v-4h-3v4h-4z" fill="var(--win)" stroke="var(--ink)" />
+        </svg>
+      )}
+      {title}
+    </span>
+    <span class="rule"></span>
+  </div>
+  <div class="spacer"></div>
+</div>
+
+<style>
+  .titlebar {
+    display: flex; align-items: center; gap: 8px;
+    height: 30px; padding: 0 8px;
+    user-select: none; touch-action: none;
+    background: linear-gradient(180deg, var(--title-a), var(--title-b));
+    border-bottom: 1px solid var(--line);
+  }
+  .lights { display: flex; gap: 5px; }
+  .light {
+    width: 13px; height: 13px;
+    padding: 0; cursor: pointer; appearance: none;
+    background: var(--light-bg);
+    border: 1px solid var(--light-line);
+    box-shadow: inset 1px 1px 0 rgba(255,255,255,.45), inset -1px -1px 0 rgba(0,0,0,.18);
+    display: grid; place-items: center;
+  }
+  /* macOS traffic lights: close / minimize / zoom */
+  .close { --light-bg: #FF5F57; --light-line: #E0443E; }
+  .min   { --light-bg: #FEBC2E; --light-line: #DEA123; }
+  .zoom  { --light-bg: #28C840; --light-line: #1AAB29; }
+  /* Glyphs show on hover, like macOS */
+  .glyph { display: block; opacity: 0; transition: opacity .12s; }
+  .lights:hover .glyph { opacity: 1; }
+  .sq { width: 5px; height: 5px; border: 1px solid rgba(0,0,0,.55); }
+  .dash { width: 7px; height: 1px; background: rgba(0,0,0,.55); }
+  .corner { width: 7px; height: 7px; border: 1px solid rgba(0,0,0,.55); border-width: 1px 1px 0 0; }
+
+  .rail { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; min-width: 0; }
+  .rule { flex: 1; height: 8px; background: repeating-linear-gradient(0deg, transparent 0 1px, rgba(0,0,0,.16) 1px 2px); }
+  .title {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-size: 11px; font-weight: 700; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; max-width: 70%;
+  }
+  .folder { flex: 0 0 auto; }
+  .spacer { width: 44px; }
+  @media (max-width: 760px) { .spacer { display: none; } }
+</style>

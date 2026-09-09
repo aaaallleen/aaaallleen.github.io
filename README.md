@@ -53,7 +53,10 @@ Some prose is hard-coded where it appears. Edit the page directly:
 | Home              | `src/pages/index.astro`         | Section headings (ABOUT ME, RECENT WRITING, …) |
 | Experience        | `src/pages/experience.astro`    | Intro sentence, legend labels                  |
 | Projects          | `src/pages/projects.astro`      | Intro sentence                                 |
-| Writing           | `src/pages/writing/index.astro` | Intro sentence (list + tag bar are components) |
+| Folder windows    | `src/layouts/Finder.astro`      | Folder window chrome, toolbar, search, status bar |
+| Home folder       | `src/pages/home.astro`          | The three desktop items as a list              |
+| List view         | `src/components/FinderList.astro` | Columns, sorting, selection, search behaviour  |
+| Folder sidebar    | `src/components/FinderSidebar.astro` | Favorites and Tags                          |
 | Tag pages         | `src/pages/writing/tag/[tag].astro` | Generated per tag                          |
 | Post              | `src/pages/writing/[slug].astro`| Post layout and article typography             |
 | Contact           | `src/pages/contact.astro`       | Intro sentence                                 |
@@ -64,7 +67,9 @@ Some prose is hard-coded where it appears. Edit the page directly:
 | You want to change…                                  | Edit                                                       |
 | ---------------------------------------------------- | ---------------------------------------------------------- |
 | Colours for both themes, fonts, button styles        | `src/styles/global.css` (tokens at the top)                |
-| Window frame: title bar, traffic lights, sidebar grid | `src/layouts/Desktop.astro`                                |
+| Site window frame: toolbar, sidebar grid, status bar | `src/layouts/Desktop.astro`                                |
+| Title bar and traffic lights (both windows)          | `src/components/TitleBar.astro`                            |
+| `<head>`, menu bar, dock, desktop, About (both windows) | `src/layouts/Shell.astro`                               |
 | Menu bar and its dropdowns                           | `src/components/MenuBar.astro`                             |
 | Sidebar, toolbar                                     | `src/components/Sidebar.astro`, `Toolbar.astro`            |
 | The two hero variants                                | `src/components/HeroA.astro`, `HeroB.astro`                |
@@ -108,6 +113,20 @@ case- and punctuation-insensitively, so "GPU optimizing" and "gpu-optimizing" ar
 the spelling from the first post that uses a tag is the one displayed. Nothing else to maintain:
 add a new tag to a post and its page and chip appear on the next build.
 
+`/writing/` is not a page in the site window: it opens as its own **Finder-style folder window**.
+The sidebar lists Favorites (Home, Writing, the CV) and every tag with a colour dot and count; the
+Home favorite (`/home/`) is itself a folder listing the three desktop items — the site as an
+application, the Writing folder, and the CV — with NAME, KIND and DATE MODIFIED columns. The
+main pane is a one-line-per-post list with NAME, DATE ADDED and TAGS columns. Click a column header
+to sort, click again to reverse (remembered in the browser); type in the toolbar search box to
+filter by name or tag. Single click selects a post, double-click opens it in the site window
+(keyboard Enter and touch open directly). Tag pages are the same folder filtered to one tag.
+
+Sorting by Tags works like macOS Finder: posts are ordered by their tags in the order you wrote
+them, so the **first tag is the primary one** and decides where a multi-tag post lands. Later tags
+break ties, then date. Tag colours are assigned automatically and stay stable; to pick your own,
+set `tagColors` in `src/site.config.ts` (e.g. `{ poker: 'red' }`).
+
 Conventions the template bakes in, so posts look like the rest of the site:
 
 - The first paragraph renders in darker ink than the rest. Make it the hook.
@@ -147,11 +166,18 @@ The window chrome is functional, not decorative. All of it lives in `src/scripts
 
 - **Red / yellow / green** close, minimize, and zoom the window. Minimize drops the window into a
   dock at the bottom (click the tile to restore); close hides it entirely. Either way the desktop
-  behind it shows two icons in the centre of the screen: the site, which restores the window if it
-  was minimized or relaunches it on Home if it was closed, and the CV, which opens the CV page.
-  Zoom fills the viewport width.
+  behind it shows three icons in the centre of the screen: the site, which restores the window if
+  it was minimized or relaunches it on Home if it was closed; a Writing folder, which opens as a
+  Finder-style folder window; and the CV, which opens the CV page. Zoom fills the viewport width.
+- **Drag a window by its title bar** to move it (not when zoomed, and not on phones, where the
+  window is full width). The position is kept for the rest of the visit; double-click the title
+  bar to re-center. A window can never be dragged out of reach.
 - **File / View / Help** are real dropdown menus (mouse, touch, and keyboard: arrows, Escape).
   Help → About opens a small "About This Mac"-style panel showing the stack and build date.
+- Navigation between pages is client-side: links are fetched and swapped into the current
+  document with a view transition, so the menu bar stays put and windows cross-fade rather than
+  the page flashing white. Every page is still a real static HTML file, so deep links, the back
+  button and no-JavaScript visitors all work.
 - Window state resets on every navigation on purpose, so nobody lands on an empty desktop.
   Only the theme and zoom preferences persist, in `localStorage`.
 
@@ -173,7 +199,7 @@ works under any of the three layouts without code changes.
 
 ## Stack
 
-- Astro 7 (static output; the only client JavaScript is the small desktop shell script: theme, clock, menus, window state)
+- Astro 7 (static output; client JavaScript is the desktop shell script plus Astro's client router for in-place page swaps)
 - `@astrojs/mdx` for posts that embed components
 - KaTeX for LaTeX, rendered at build time by a small Sätteri plugin (`src/lib/satteri-katex.mjs`)
 - Content collections with a typed schema for posts

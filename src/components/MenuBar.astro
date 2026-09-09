@@ -2,7 +2,7 @@
 import { site } from '../site.config';
 import { url } from '../lib/url';
 ---
-<header class="menubar" data-menubar>
+<header class="menubar" data-menubar transition:persist="menubar">
   <div class="left">
     <a class="logo" href={url('/')} aria-label="Home"></a>
     <a class="px brand" href={url('/')}>{site.brand}</a>

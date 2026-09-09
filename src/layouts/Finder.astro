@@ -1,0 +1,118 @@
+---
+/**
+ * A folder window in the Finder style. The Home folder, the Writing folder and
+ * each tag view render here; opening a post or the app navigates to the site
+ * window (Desktop layout).
+ */
+import Shell from './Shell.astro';
+import TitleBar from '../components/TitleBar.astro';
+import FinderSidebar from '../components/FinderSidebar.astro';
+import type { TagInfo } from '../lib/tags';
+import { site } from '../site.config';
+import { url } from '../lib/url';
+
+interface Props {
+  /** Window title, e.g. "Home", "Writing" or a tag name. */
+  title: string;
+  icon?: 'folder' | 'home';
+  tabTitle?: string;
+  description?: string;
+  tags: TagInfo[];
+  /** Which Favorites entry is highlighted. */
+  activeItem?: 'home' | 'writing';
+  /** Slug of the tag being viewed, if any. */
+  activeTag?: string;
+  /** Status bar text before JavaScript runs, e.g. from sortStatus(). */
+  status: string;
+}
+const { title, icon = 'folder', tabTitle = `${title} · Writing · ${site.name}`, description, tags, activeItem, activeTag, status } = Astro.props;
+---
+<Shell tabTitle={tabTitle} windowTitle={title} description={description}>
+  <div class="desk">
+    <div class="window" data-window-el data-window-kind="folder" tabindex="-1" transition:name="folder-window">
+      <TitleBar title={title} icon={icon} />
+
+      <div class="toolbar">
+        <div class="group">
+          <button class="tb" type="button" data-action="back" data-home={url('/')}>&lt; Back</button>
+          <a class="tb" href={url('/home/')}>Home</a>
+        </div>
+        <label class="search">
+          <span class="px search-label">SEARCH</span>
+          <input type="search" placeholder="Name or tag" autocomplete="off" spellcheck="false" data-list-search aria-label="Search posts by name or tag" />
+        </label>
+      </div>
+
+      <div class="body">
+        <FinderSidebar tags={tags} activeItem={activeItem} activeTag={activeTag} />
+        <main class="content" id="main">
+          <slot />
+        </main>
+      </div>
+
+      <footer class="statusbar">
+        <span class="px status" data-sort-status>{status}</span>
+        <span class="px hint" aria-hidden="true">
+          <span class="hint-fine">Double-click an item to open it</span>
+          <span class="hint-coarse">Tap an item to open it</span>
+        </span>
+      </footer>
+    </div>
+  </div>
+</Shell>
+
+<style>
+  .desk {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: clamp(18px, 5vw, 56px) clamp(10px, 3vw, 32px) 0;
+  }
+  .window {
+    display: flex; flex-direction: column;
+    min-height: min(560px, calc(100vh - 26px - 2 * clamp(18px, 5vw, 56px)));
+    background: var(--chrome);
+    border: 1px solid var(--line);
+    box-shadow: var(--drop);
+    outline: none;
+  }
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+    padding: 7px 9px;
+    background: var(--chrome);
+    border-bottom: 1px solid var(--line);
+  }
+  .group { display: flex; align-items: center; gap: 6px; }
+  .search { display: flex; align-items: center; gap: 8px; }
+  .search-label { font-size: 9px; color: var(--ink-3); }
+  .search input {
+    width: min(220px, 50vw);
+    padding: 3px 8px;
+    background: var(--win); color: var(--ink);
+    border: 1px solid var(--line);
+    box-shadow: var(--bev-in);
+    font: 11px/1.4 var(--font-ui);
+    appearance: none; border-radius: 0;
+  }
+  .search input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .body {
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(0, 176px) minmax(0, 1fr);
+    align-items: stretch;
+  }
+  .content { background: var(--win); min-width: 0; }
+  .statusbar {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 5px 10px;
+    background: var(--chrome);
+    border-top: 1px solid var(--line);
+    box-shadow: var(--bev-out);
+  }
+  .status { font-size: 9px; color: var(--ink-2); }
+  .hint { font-size: 9px; color: var(--ink-3); white-space: nowrap; }
+  .hint-coarse { display: none; }
+  @media (pointer: coarse) { .hint-fine { display: none; } .hint-coarse { display: inline; } }
+  @media (max-width: 760px) {
+    .body { grid-template-columns: minmax(0, 1fr); }
+  }
+</style>

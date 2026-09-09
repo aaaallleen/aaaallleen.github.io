@@ -1,0 +1,68 @@
+---
+/**
+ * Everything around a window: <head>, the sticky menu bar, the dock, the
+ * desktop icons, the About dialog and the behaviour script. Both window
+ * layouts (Desktop = the site window, Finder = a folder window) render inside it.
+ * Navigation between pages is client-side (Astro's ClientRouter), so the
+ * behaviour script re-initialises on `astro:page-load` rather than on load.
+ */
+import '../styles/global.css';
+import MenuBar from '../components/MenuBar.astro';
+import Dock from '../components/Dock.astro';
+import DesktopIcons from '../components/DesktopIcons.astro';
+import AboutDialog from '../components/AboutDialog.astro';
+import { site } from '../site.config';
+import { url } from '../lib/url';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  /** Browser tab title. */
+  tabTitle: string;
+  /** Shown on the dock tile when the window is minimized. */
+  windowTitle: string;
+  description?: string;
+}
+const { tabTitle, windowTitle, description = site.description } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+---
+<!doctype html>
+<html lang="en" data-theme={site.defaultTheme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tabTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta property="og:title" content={tabTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen:wght@400;700&display=swap" />
+    <!-- Same-site links are fetched and swapped in place, so the menu bar stays
+         put and windows cross-fade instead of the page flashing white. -->
+    <ClientRouter />
+    <script is:inline>
+      // Apply saved theme + zoom before first paint so there is no flash.
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (t === 'light' || t === 'night') document.documentElement.setAttribute('data-theme', t);
+          if (localStorage.getItem('zoom') === '1') document.documentElement.classList.add('is-zoomed');
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body data-window="open">
+    <MenuBar />
+    <slot />
+    <Dock windowTitle={windowTitle} />
+    <DesktopIcons />
+    <AboutDialog />
+    <script>
+      import '../scripts/desktop';
+    </script>
+  </body>
+</html>

@@ -4,7 +4,7 @@ import { url } from '../lib/url';
 ---
 <div class="toolbar">
   <div class="group">
-    <button class="tb" type="button" data-back data-home={url('/')}>&lt; Back</button>
+    <button class="tb" type="button" data-action="back" data-home={url('/')}>&lt; Back</button>
     <a class="tb" href={url('/')}>Home</a>
   </div>
   <div class="group">
@@ -23,12 +23,3 @@ import { url } from '../lib/url';
   .group { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 </style>
 
-<script>
-  document.querySelector<HTMLButtonElement>('[data-back]')?.addEventListener('click', (e) => {
-    const home = (e.currentTarget as HTMLElement).dataset.home ?? '/';
-    let cameFromHere = false;
-    try { cameFromHere = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch {}
-    if (cameFromHere && history.length > 1) history.back();
-    else location.href = home;
-  });
-</script>

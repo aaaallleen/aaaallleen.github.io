@@ -49,6 +49,13 @@ export const site = {
     ],
   },
 
+  /**
+   * Optional Finder-style colours for tags, keyed by tag name. Values: red, orange,
+   * yellow, green, blue, purple, gray. Tags not listed get a stable automatic colour.
+   *   tagColors: { poker: 'red', 'GPU optimizing': 'green' }
+   */
+  tagColors: {} as Record<string, 'red' | 'orange' | 'yellow' | 'green' | 'blue' | 'purple' | 'gray'>,
+
   contacts: [
     { k: 'EMAIL', v: 'chiaen119@gmail.com', href: 'mailto:chiaen119@gmail.com' },
     { k: 'GITHUB', v: 'github.com/aaaallleen', href: 'https://github.com/aaaallleen' },

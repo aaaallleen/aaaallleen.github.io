@@ -1,0 +1,68 @@
+---
+/** Finder-style sidebar for folder windows: FAVORITES and colour-dotted TAGS. */
+import { site } from '../site.config';
+import { url } from '../lib/url';
+import { tagColor, type TagInfo } from '../lib/tags';
+
+interface Props { tags: TagInfo[]; activeItem?: 'home' | 'writing'; activeTag?: string }
+const { tags, activeItem, activeTag } = Astro.props;
+---
+<nav class="sidebar" aria-label="Folder sidebar">
+  <div class="group">
+    <div class="px group-label">FAVORITES</div>
+    <a class="item" href={url('/home/')} aria-current={activeItem === 'home' ? 'page' : undefined}>
+      <svg class="ico" viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 7.5 7 2.5l5.5 5v5h-4v-4h-3v4h-4z" fill="var(--win)" stroke="currentColor" /></svg>
+      <span class="label">Home</span>
+    </a>
+    <a class="item" href={url('/writing/')} aria-current={activeItem === 'writing' ? 'page' : undefined}>
+      <svg class="ico" viewBox="0 0 14 14" aria-hidden="true"><path d="M.5 2.5h4.5l1.5 2h7v7H.5z" fill="var(--chrome-2)" stroke="currentColor" /><path d="M.5 5.5h13v6H.5z" fill="var(--chrome)" stroke="currentColor" /></svg>
+      <span class="label">Writing</span>
+    </a>
+    <a class="item" href={url('/cv/')}>
+      <svg class="ico" viewBox="0 0 14 14" aria-hidden="true"><path d="M2.5.5h6l3 3v10h-9z" fill="var(--win)" stroke="currentColor" /><path d="M8.5.5v3h3" fill="none" stroke="currentColor" /></svg>
+      <span class="label">{site.cv.label}</span>
+    </a>
+  </div>
+
+  {tags.length > 0 && (
+    <div class="group">
+      <div class="px group-label">TAGS</div>
+      {tags.map((t) => (
+        <a class="item" href={url(`/writing/tag/${t.slug}/`)} aria-current={t.slug === activeTag ? 'page' : undefined}>
+          <i class="dot" style={`--c:${tagColor(t.name)}`} aria-hidden="true"></i>
+          <span class="label">{t.name}</span>
+          <span class="px count">{t.count}</span>
+        </a>
+      ))}
+    </div>
+  )}
+</nav>
+
+<style>
+  .sidebar { background: var(--panel); border-right: 1px solid var(--line); padding: 12px 0; }
+  .group { margin-bottom: 18px; }
+  .group-label { font-size: 10px; color: var(--ink-3); padding: 0 12px 7px; }
+  .item {
+    display: flex; align-items: center; gap: 9px;
+    padding: 5px 12px;
+    color: var(--ink); text-decoration: none;
+  }
+  .item[aria-current="page"] { background: var(--sel); color: var(--sel-ink); }
+  .ico { width: 13px; height: 13px; flex: 0 0 auto; }
+  .item .dot { flex: 0 0 auto; margin: 0 2px 0 3px; }
+  .label { font-size: 11px; line-height: 1.3; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .count { margin-left: auto; font-size: 9px; color: var(--ink-3); }
+  .item[aria-current="page"] .count { color: var(--sel-ink); opacity: .8; }
+
+  @media (max-width: 760px) {
+    .sidebar {
+      display: flex; flex-wrap: wrap; gap: 8px 22px;
+      padding: 10px 12px 4px;
+      border-right: 0; border-bottom: 1px solid var(--line);
+    }
+    .group { margin-bottom: 6px; display: flex; flex-wrap: wrap; gap: 2px 4px; align-items: center; }
+    .group-label { padding: 0 6px 0 0; width: 100%; }
+    .item { padding: 4px 8px; }
+    .count { margin-left: 4px; }
+  }
+</style>

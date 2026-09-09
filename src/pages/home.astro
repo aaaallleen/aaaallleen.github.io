@@ -1,0 +1,45 @@
+---
+/**
+ * The Home folder: a Finder window listing what sits on the desktop —
+ * the site (an application), the Writing folder, and the CV. Double-click
+ * opens each: the app launches the site window on its home page.
+ */
+import { stat } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import Finder from '../layouts/Finder.astro';
+import FinderList from '../components/FinderList.astro';
+import { site } from '../site.config';
+import { getPosts } from '../lib/posts';
+import { collectTags } from '../lib/tags';
+import { sortStatus, type FinderRow } from '../lib/finder';
+import { url } from '../lib/url';
+
+const posts = await getPosts();
+const tags = collectTags(posts);
+
+let cvModified: Date | undefined;
+let cvSize = '';
+try {
+  // Build runs from the project root, so resolve against cwd rather than the bundled module URL.
+  const s = await stat(resolve('public', site.cv.file));
+  cvModified = s.mtime;
+  cvSize = ` · ${Math.round(s.size / 1024)} KB`;
+} catch {}
+
+const rows: FinderRow[] = [
+  { href: url('/'), name: site.brand, icon: 'app', kind: 'Application', kindSort: 'application', tooltip: 'Open the site', date: new Date() },
+  { href: url('/writing/'), name: 'Writing', icon: 'folder', kind: `Folder · ${posts.length} ${posts.length === 1 ? 'item' : 'items'}`, kindSort: 'folder', tooltip: 'Open the Writing folder', date: posts[0]?.data.date },
+  { href: url('/cv/'), name: site.cv.label, icon: 'pdf', kind: `PDF document${cvSize}`, kindSort: 'pdf document', tooltip: 'Open the CV', date: cvModified },
+];
+---
+<Finder
+  title="Home"
+  icon="home"
+  tabTitle={`Home folder · ${site.name}`}
+  tags={tags}
+  activeItem="home"
+  status={sortStatus(rows.length, 'name', 'asc', 'NAME')}
+  description={`${site.name}'s home folder: the site, the Writing folder, and the CV.`}
+>
+  <FinderList rows={rows} columns={['name', 'kind', 'date']} labels={{ date: 'DATE MODIFIED' }} sortKey="home" defaultSort={{ col: 'name', dir: 'asc' }} />
+</Finder>
