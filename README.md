@@ -53,11 +53,13 @@ Some prose is hard-coded where it appears. Edit the page directly:
 | Home              | `src/pages/index.astro`         | Section headings (ABOUT ME, RECENT WRITING, …) |
 | Experience        | `src/pages/experience.astro`    | Intro sentence, legend labels                  |
 | Projects          | `src/pages/projects.astro`      | Intro sentence                                 |
+| Writing (site window) | `src/pages/writing/index.astro`, `components/WritingList.astro` | List + in-place tag filter |
 | Folder windows    | `src/layouts/Finder.astro`      | Folder window chrome, toolbar, search, status bar |
-| Home folder       | `src/pages/home.astro`          | The three desktop items as a list              |
-| List view         | `src/components/FinderList.astro` | Columns, sorting, selection, search behaviour  |
+| Home folder       | `src/pages/home/index.astro`    | The three desktop items as a list              |
+| Writing folder    | `src/pages/home/writing/index.astro` | Posts as a Finder list                    |
+| Tag folder views  | `src/pages/home/writing/tag/[tag].astro` | Generated per tag                     |
+| Finder list view  | `src/components/FinderList.astro` | Columns, sorting, selection, search behaviour  |
 | Folder sidebar    | `src/components/FinderSidebar.astro` | Favorites and Tags                          |
-| Tag pages         | `src/pages/writing/tag/[tag].astro` | Generated per tag                          |
 | Post              | `src/pages/writing/[slug].astro`| Post layout and article typography             |
 | Contact           | `src/pages/contact.astro`       | Intro sentence                                 |
 | CV                | `src/pages/cv.astro`            | Viewer header and fallback text                |
@@ -107,20 +109,27 @@ draft: false
 
 ### Tags
 
-`tags` is a free-form list. Every tag automatically gets a page at `/writing/tag/<tag>/` listing
-the posts that carry it, and the Writing page shows a chip bar for filtering. Tags are matched
+`tags` is a free-form list. Every tag automatically gets a folder view at `/home/writing/tag/<tag>/`
+listing the posts that carry it, and the in-app Writing page filters by tag in place. Tags are matched
 case- and punctuation-insensitively, so "GPU optimizing" and "gpu-optimizing" are the same page;
 the spelling from the first post that uses a tag is the one displayed. Nothing else to maintain:
 add a new tag to a post and its page and chip appear on the next build.
 
-`/writing/` is not a page in the site window: it opens as its own **Finder-style folder window**.
-The sidebar lists Favorites (Home, Writing, the CV) and every tag with a colour dot and count; the
-Home favorite (`/home/`) is itself a folder listing the three desktop items — the site as an
-application, the Writing folder, and the CV — with NAME, KIND and DATE MODIFIED columns. The
-main pane is a one-line-per-post list with NAME, DATE ADDED and TAGS columns. Click a column header
-to sort, click again to reverse (remembered in the browser); type in the toolbar search box to
-filter by name or tag. Single click selects a post, double-click opens it in the site window
-(keyboard Enter and touch open directly). Tag pages are the same folder filtered to one tag.
+Posts can be browsed two ways, and both stay in their own window:
+
+- **In the site window**, `/writing/` is the Writing page: a list with DATE, TITLE and TAGS and a
+  chip bar that filters in place. The active tag lives in the URL hash (`/writing/#tag=poker`),
+  so a filtered view can be linked to. Tag chips on a post lead here too. "Open as folder" in the
+  page header is the one deliberate link into the Finder.
+- **On the desktop**, the Writing folder opens a **Finder-style folder window** at
+  `/home/writing/`. Its sidebar lists Favorites (Home, Writing, the CV) and every tag with a colour
+  dot and count; the Home favorite (`/home/`) is itself a folder listing the three desktop items —
+  the site as an application, the Writing folder, and the CV — with NAME, KIND and DATE MODIFIED
+  columns. The main pane is a one-line-per-post list with NAME, DATE ADDED and TAGS columns. Click
+  a column header to sort, click again to reverse (remembered in the browser); type in the toolbar
+  search box to filter by name or tag. Single click selects a post, double-click opens it in the
+  site window (keyboard Enter and touch open directly). Tag views (`/home/writing/tag/<tag>/`) are
+  the same folder filtered to one tag.
 
 Sorting by Tags works like macOS Finder: posts are ordered by their tags in the order you wrote
 them, so the **first tag is the primary one** and decides where a multi-tag post lands. Later tags

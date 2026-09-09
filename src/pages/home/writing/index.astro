@@ -1,0 +1,18 @@
+---
+/** The Writing folder (~/Writing): a Finder window listing every post. */
+import Finder from '../../../layouts/Finder.astro';
+import FinderList from '../../../components/FinderList.astro';
+import { getPosts } from '../../../lib/posts';
+import { collectTags } from '../../../lib/tags';
+import { postRows } from '../../../lib/postRows';
+import { sortStatus } from '../../../lib/finder';
+
+const posts = await getPosts();
+const tags = collectTags(posts);
+const rows = postRows(posts);
+---
+<Finder title="Writing" tabTitle="Writing folder · Allen Lu" tags={tags} activeItem="writing"
+  status={sortStatus(rows.length, 'date', 'desc', 'DATE ADDED')}
+  description="Allen Lu's Writing folder: every post, sortable by name, date, or tag.">
+  <FinderList rows={rows} sortKey="writing" />
+</Finder>

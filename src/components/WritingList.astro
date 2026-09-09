@@ -1,0 +1,128 @@
+---
+/**
+ * The in-app Writing page list (site window): DATE | TITLE | TAGS, with a chip
+ * bar that filters in place. The active tag lives in the URL hash
+ * (#tag=poker) so a filtered view can be linked to and survives reloads.
+ */
+import type { Post } from '../lib/posts';
+import { monthYear } from '../lib/format';
+import { collectTags, tagColor, tagSlug } from '../lib/tags';
+import { url } from '../lib/url';
+
+interface Props { posts: Post[] }
+const { posts } = Astro.props;
+const tags = collectTags(posts);
+---
+<div class="writing" data-writing>
+  <nav class="filter" aria-label="Filter posts by tag">
+    <span class="px label">FILTER</span>
+    <a class="tag-chip" href="#" data-tag="" aria-current="page">All <span class="count">{posts.length}</span></a>
+    {tags.map((t) => (
+      <a class="tag-chip" href={`#tag=${t.slug}`} data-tag={t.slug}>
+        <i class="dot" style={`--c:${tagColor(t.name)}`} aria-hidden="true"></i>{t.name} <span class="count">{t.count}</span>
+      </a>
+    ))}
+  </nav>
+
+  <div class="table">
+    <div class="thead" aria-hidden="true">
+      <span class="px th">DATE</span>
+      <span class="px th">TITLE</span>
+      <span class="px th">TAGS</span>
+    </div>
+    {posts.map((p) => (
+      <a class="row" href={url(`/writing/${p.id}/`)} data-tags={p.data.tags.map(tagSlug).join(' ')}>
+        <span class="px date">{monthYear(p.data.date)}</span>
+        <span class="main">
+          <span class="t">{p.data.title}</span>
+          <span class="dek">{p.data.dek}</span>
+        </span>
+        <span class="tags">
+          {p.data.tags.length > 0 && (
+            <span class="dots" aria-hidden="true">
+              {p.data.tags.map((t) => <i class="dot" style={`--c:${tagColor(t)}`}></i>)}
+            </span>
+          )}
+          <span class="names">{p.data.tags.join(', ')}</span>
+        </span>
+      </a>
+    ))}
+    <p class="empty" data-empty hidden>No posts with that tag yet.</p>
+  </div>
+</div>
+
+<style>
+  .filter { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 18px; }
+  .filter .label { font-size: 9px; color: var(--ink-3); margin-right: 4px; }
+  .filter .dot { margin-right: 5px; }
+  .count { opacity: .6; font-size: 9px; margin-left: 2px; }
+
+  .table { border: 1px solid var(--line); box-shadow: var(--bev-in); background: var(--win); }
+  .thead, .row {
+    display: grid;
+    grid-template-columns: minmax(0, 92px) minmax(0, 1fr) minmax(0, 190px);
+    gap: 14px;
+  }
+  .thead { padding: 8px 14px; background: var(--panel); border-bottom: 1px solid var(--line); }
+  .th { font-size: 9px; color: var(--ink-3); }
+  .row {
+    padding: 13px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    color: inherit; text-decoration: none;
+  }
+  .row.alt { background: var(--panel); }
+  .row:hover .t { text-decoration: underline; }
+  .date { font-size: 9px; color: var(--ink-3); padding-top: 3px; }
+  .main { min-width: 0; }
+  .t { display: block; font-size: 13px; font-weight: 700; line-height: 1.4; }
+  .dek { display: block; font-size: 12px; color: var(--ink-2); line-height: 1.55; padding-top: 4px; }
+  .tags { display: flex; align-items: flex-start; gap: 7px; min-width: 0; padding-top: 3px; }
+  .dots { display: inline-flex; flex: 0 0 auto; padding-top: 3px; }
+  .dots .dot { margin-left: -3px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 0 0 1px var(--win); }
+  .dots .dot:first-child { margin-left: 0; }
+  .row.alt .dots .dot { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), 0 0 0 1px var(--panel); }
+  .names { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+  .empty { margin: 0; padding: 18px 14px; font-size: 12px; color: var(--ink-2); }
+
+  @media (max-width: 640px) {
+    .thead, .row { grid-template-columns: minmax(0, 92px) minmax(0, 1fr); }
+    .th:last-child { display: none; }
+    .tags { grid-column: 2; padding-top: 0; }
+  }
+</style>
+
+<script>
+  function apply(root: HTMLElement) {
+    const slug = new URLSearchParams(location.hash.replace(/^#/, '')).get('tag') ?? '';
+    const rows = Array.from(root.querySelectorAll<HTMLElement>('.row'));
+    let shown = 0;
+    rows.forEach((r) => {
+      const hit = !slug || (r.dataset.tags ?? '').split(' ').includes(slug);
+      r.hidden = !hit;
+      r.classList.toggle('alt', hit && shown % 2 === 1); // zebra stripes over visible rows only
+      if (hit) shown++;
+    });
+    root.querySelectorAll<HTMLElement>('[data-tag]').forEach((chip) => {
+      if (chip.dataset.tag === slug) chip.setAttribute('aria-current', 'page');
+      else chip.removeAttribute('aria-current');
+    });
+    const empty = root.querySelector<HTMLElement>('[data-empty]');
+    if (empty) empty.hidden = shown > 0;
+  }
+  const applyAll = () => document.querySelectorAll<HTMLElement>('[data-writing]').forEach(apply);
+  document.addEventListener('astro:page-load', applyAll);
+  addEventListener('hashchange', applyAll);
+
+  // Chip clicks filter in place. Handled here (not left to the client router) and
+  // written with replaceState so filtering never adds history entries: pressing
+  // Back leaves the page, it doesn't step back through filters. Capture phase so
+  // this runs before the router's own click listener sees the event.
+  document.addEventListener('click', (e) => {
+    const chip = (e.target as Element).closest<HTMLElement>('[data-writing] [data-tag]');
+    if (!chip) return;
+    e.preventDefault();
+    const slug = chip.dataset.tag ?? '';
+    history.replaceState(history.state, '', location.pathname + location.search + (slug ? `#tag=${slug}` : ''));
+    applyAll();
+  }, { capture: true });
+</script>

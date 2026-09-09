@@ -14,7 +14,7 @@ const { tags, activeItem, activeTag } = Astro.props;
       <svg class="ico" viewBox="0 0 14 14" aria-hidden="true"><path d="M1.5 7.5 7 2.5l5.5 5v5h-4v-4h-3v4h-4z" fill="var(--win)" stroke="currentColor" /></svg>
       <span class="label">Home</span>
     </a>
-    <a class="item" href={url('/writing/')} aria-current={activeItem === 'writing' ? 'page' : undefined}>
+    <a class="item" href={url('/home/writing/')} aria-current={activeItem === 'writing' ? 'page' : undefined}>
       <svg class="ico" viewBox="0 0 14 14" aria-hidden="true"><path d="M.5 2.5h4.5l1.5 2h7v7H.5z" fill="var(--chrome-2)" stroke="currentColor" /><path d="M.5 5.5h13v6H.5z" fill="var(--chrome)" stroke="currentColor" /></svg>
       <span class="label">Writing</span>
     </a>
@@ -28,7 +28,7 @@ const { tags, activeItem, activeTag } = Astro.props;
     <div class="group">
       <div class="px group-label">TAGS</div>
       {tags.map((t) => (
-        <a class="item" href={url(`/writing/tag/${t.slug}/`)} aria-current={t.slug === activeTag ? 'page' : undefined}>
+        <a class="item" href={url(`/home/writing/tag/${t.slug}/`)} aria-current={t.slug === activeTag ? 'page' : undefined}>
           <i class="dot" style={`--c:${tagColor(t.name)}`} aria-hidden="true"></i>
           <span class="label">{t.name}</span>
           <span class="px count">{t.count}</span>

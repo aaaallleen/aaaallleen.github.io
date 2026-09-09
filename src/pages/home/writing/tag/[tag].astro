@@ -1,11 +1,11 @@
 ---
-/** One folder window per tag: /writing/tag/<slug>/ — the Writing list filtered to that tag. */
-import Finder from '../../../layouts/Finder.astro';
-import FinderList from '../../../components/FinderList.astro';
-import { getPosts } from '../../../lib/posts';
-import { collectTags, postsWithTag, type TagInfo } from '../../../lib/tags';
-import { postRows } from '../../../lib/postRows';
-import { sortStatus } from '../../../lib/finder';
+/** One folder view per tag: /home/writing/tag/<slug>/ — the Writing folder filtered to that tag. */
+import Finder from '../../../../layouts/Finder.astro';
+import FinderList from '../../../../components/FinderList.astro';
+import { getPosts } from '../../../../lib/posts';
+import { collectTags, postsWithTag, type TagInfo } from '../../../../lib/tags';
+import { postRows } from '../../../../lib/postRows';
+import { sortStatus } from '../../../../lib/finder';
 
 export async function getStaticPaths() {
   const posts = await getPosts();

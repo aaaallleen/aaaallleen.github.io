@@ -1,18 +1,29 @@
 ---
-/** The Writing folder: a Finder window listing every post. */
-import Finder from '../../layouts/Finder.astro';
-import FinderList from '../../components/FinderList.astro';
+/** Writing, inside the site window: the post list with an in-place tag filter. */
+import Desktop from '../../layouts/Desktop.astro';
+import WritingList from '../../components/WritingList.astro';
+import { site } from '../../site.config';
 import { getPosts } from '../../lib/posts';
-import { collectTags } from '../../lib/tags';
-import { postRows } from '../../lib/postRows';
-import { sortStatus } from '../../lib/finder';
+import { url } from '../../lib/url';
 
 const posts = await getPosts();
-const tags = collectTags(posts);
-const rows = postRows(posts);
+const status = `${posts.length} ${posts.length === 1 ? 'item' : 'items'} — ${site.email}`;
 ---
-<Finder title="Writing" tabTitle="Writing · Allen Lu" tags={tags} activeItem="writing"
-  status={sortStatus(rows.length, 'date', 'desc', 'DATE ADDED')}
-  description="Writing by Allen Lu on GPU profiling, model compilation, poker, and whatever else is on his mind.">
-  <FinderList rows={rows} sortKey="writing" />
-</Finder>
+<Desktop section="blog" status={status} description="Writing by Allen Lu on GPU profiling, model compilation, poker, and whatever else is on his mind.">
+  <div class="page">
+    <div class="head">
+      <h1 class="section-title tight">WRITING</h1>
+      <a class="px folder" href={url('/home/writing/')} title="Browse these posts as a folder">Open as folder &gt;</a>
+    </div>
+    <p class="intro">Profiler traces, compilation failures, and things I built to understand something. Mostly the second one.</p>
+    <WritingList posts={posts} />
+  </div>
+</Desktop>
+
+<style>
+  .page { padding: var(--pad-y-page) var(--pad-x); }
+  .head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; }
+  .tight { margin-bottom: 8px; }
+  .folder { font-size: 10px; color: var(--accent); text-decoration: none; white-space: nowrap; }
+  .intro { font-size: 13px; color: var(--ink-2); margin: 0 0 22px; max-width: 60ch; }
+</style>

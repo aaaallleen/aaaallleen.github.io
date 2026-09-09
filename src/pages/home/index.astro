@@ -6,13 +6,13 @@
  */
 import { stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import Finder from '../layouts/Finder.astro';
-import FinderList from '../components/FinderList.astro';
-import { site } from '../site.config';
-import { getPosts } from '../lib/posts';
-import { collectTags } from '../lib/tags';
-import { sortStatus, type FinderRow } from '../lib/finder';
-import { url } from '../lib/url';
+import Finder from '../../layouts/Finder.astro';
+import FinderList from '../../components/FinderList.astro';
+import { site } from '../../site.config';
+import { getPosts } from '../../lib/posts';
+import { collectTags } from '../../lib/tags';
+import { sortStatus, type FinderRow } from '../../lib/finder';
+import { url } from '../../lib/url';
 
 const posts = await getPosts();
 const tags = collectTags(posts);
@@ -28,7 +28,7 @@ try {
 
 const rows: FinderRow[] = [
   { href: url('/'), name: site.brand, icon: 'app', kind: 'Application', kindSort: 'application', tooltip: 'Open the site', date: new Date() },
-  { href: url('/writing/'), name: 'Writing', icon: 'folder', kind: `Folder · ${posts.length} ${posts.length === 1 ? 'item' : 'items'}`, kindSort: 'folder', tooltip: 'Open the Writing folder', date: posts[0]?.data.date },
+  { href: url('/home/writing/'), name: 'Writing', icon: 'folder', kind: `Folder · ${posts.length} ${posts.length === 1 ? 'item' : 'items'}`, kindSort: 'folder', tooltip: 'Open the Writing folder', date: posts[0]?.data.date },
   { href: url('/cv/'), name: site.cv.label, icon: 'pdf', kind: `PDF document${cvSize}`, kindSort: 'pdf document', tooltip: 'Open the CV', date: cvModified },
 ];
 ---
