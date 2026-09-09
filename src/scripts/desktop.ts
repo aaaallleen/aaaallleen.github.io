@@ -262,4 +262,34 @@ setTimeout(() => { tick(); setInterval(tick, 60_000); }, (60 - new Date().getSec
 
 /* ------------------------------------------------------------------- init */
 
+/**
+ * Re-apply saved preferences from localStorage. The inline <head> script does
+ * this before first paint, but it does not run again when the browser restores
+ * a page from the back-forward cache: pressing Back would then show the page
+ * frozen with whatever theme it had when you left it. Also fired when another
+ * tab changes the preference, so tabs stay in step.
+ */
+function applyStoredPrefs() {
+  const t = store.get('theme');
+  if (t === 'light' || t === 'night') root.setAttribute('data-theme', t);
+  root.classList.toggle('is-zoomed', store.get('zoom') === '1');
+  syncLabels();
+}
+
+window.addEventListener('pageshow', (e) => {
+  if (!e.persisted) return;
+  applyStoredPrefs();
+  // Window state is per visit, so a restored page always comes back open.
+  if (win && getState() !== 'open') {
+    body.dataset.window = 'open';
+    win.hidden = false;
+    deselectIcons();
+    syncLabels();
+  }
+});
+
+window.addEventListener('storage', (e) => {
+  if (e.key === 'theme' || e.key === 'zoom' || e.key === null) applyStoredPrefs();
+});
+
 syncLabels();
