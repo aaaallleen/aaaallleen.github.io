@@ -14,7 +14,7 @@ const pdf = url(site.cv.file);
         </div>
         <a class="px download" href={pdf} download={site.cv.downloadName}>Download</a>
       </div>
-      <div class="body">
+      <div class="vbody">
         <iframe src={`${pdf}#view=FitH`} title={`${site.name} CV ${site.year}`}></iframe>
         <p class="fallback">If the preview does not load, <a href={pdf}>open the PDF directly</a>.</p>
       </div>
@@ -39,10 +39,18 @@ const pdf = url(site.cv.file);
     box-shadow: inset 1px 1px 0 rgba(255,255,255,.3);
     font-size: 10px; text-decoration: none;
   }
-  .body { padding: 9px; background: var(--panel); }
+  .vbody { padding: 9px; background: var(--panel); }
   iframe {
     display: block; width: 100%; height: min(78vh, 900px);
     border: 1px solid var(--line); background: #fff; box-shadow: var(--bev-in);
+  }
+  /* Desktop widths: the window has a fixed height, so the viewer fills it
+     (and grows with the window when zoomed) instead of using a viewport guess. */
+  @media (min-width: 761px) {
+    .page { height: 100%; display: flex; flex-direction: column; }
+    .viewer { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    .vbody { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+    iframe { flex: 1; height: auto; min-height: 240px; }
   }
   .fallback { font-size: 11px; color: var(--ink-3); margin: 8px 0 0; text-align: center; }
   .fallback a { color: var(--accent); }

@@ -85,8 +85,10 @@ html.is-zoomed body { padding-bottom: 0; }
 .desk { position: relative; z-index: 25; pointer-events: none; }
 [data-window-el] { pointer-events: auto; }
 
-/* Zoom (green light): whichever window is on the page fills the viewport. */
-html.is-zoomed .desk { max-width: none; padding: 0; }
+/* Zoom (green light): whichever window is on the page fills the viewport.
+   Like full screen on a Mac, the dock steps out of the way while zoomed. */
+html.is-zoomed .desk { max-width: none; padding: 0 !important; }
+html.is-zoomed [data-dock] { display: none !important; }
 html.is-zoomed [data-window-el] {
   display: flex; flex-direction: column;
   min-height: calc(100vh - 26px);
