@@ -1,0 +1,50 @@
+---
+/** Not found, in the site window. GitHub Pages serves dist/404.html for unknown paths. */
+import Desktop from '../layouts/Desktop.astro';
+import { url } from '../lib/url';
+---
+<Desktop section="notfound" tabTitle="File not found · Allen Lu" status="0 items — nothing at this address">
+  <div class="page">
+    <div class="alert" role="alert">
+      <div class="icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" width="48" height="48">
+          <path d="M9.5 3.5h20l10 10v31h-30z" fill="var(--win)" stroke="var(--ink)" />
+          <path d="M29.5 3.5v10h10" fill="var(--panel)" stroke="var(--ink)" />
+          <path d="M17 20l14 14M31 20L17 34" stroke="var(--accent)" stroke-width="2.5" />
+        </svg>
+      </div>
+      <div>
+        <h1 class="section-title tight">FILE NOT FOUND</h1>
+        <p class="lede">The item “<code data-missing-path>this page</code>” could not be found. It may have been moved, renamed, or never existed.</p>
+        <div class="actions">
+          <a class="btn btn-primary" href={url('/')}>Go Home</a>
+          <a class="btn btn-chrome" href={url('/writing/')}>Browse Writing</a>
+          <a class="btn btn-chrome" href={url('/home/')}>Open Home folder</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</Desktop>
+
+<style>
+  .page { padding: var(--pad-y-page) var(--pad-x); }
+  .alert {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 20px; align-items: start;
+    max-width: 560px; padding: 20px 22px;
+    background: var(--panel); border: 1px solid var(--line); box-shadow: var(--drop);
+  }
+  .icon { filter: drop-shadow(2px 2px 0 rgba(0,0,0,.2)); }
+  .tight { margin-bottom: 10px; }
+  .lede { font-size: 13px; line-height: 1.7; color: var(--ink-2); margin: 0 0 18px; }
+  code { font-family: var(--font-mono); font-size: 12px; background: var(--win); border: 1px solid var(--line-soft); padding: 0 4px; word-break: break-all; }
+  .actions { display: flex; gap: 9px; flex-wrap: wrap; }
+  @media (max-width: 480px) { .alert { grid-template-columns: 1fr; } }
+</style>
+
+<script>
+  // Show the path that was requested (a static 404 cannot know it at build time).
+  document.addEventListener('astro:page-load', () => {
+    const el = document.querySelector('[data-missing-path]');
+    if (el) el.textContent = location.pathname;
+  });
+</script>

@@ -103,6 +103,7 @@ html.is-zoomed [data-window-el] { transform: none !important; }
 body.is-dragging, body.is-dragging * { cursor: grabbing !important; }
 [data-window-el].is-dragging { will-change: transform; }
 [data-window-el][hidden] { display: none !important; }
+html.start-closed [data-window-el] { display: none !important; } /* first arrival on the desktop; init() makes it real */
 
 /* Pixel-font utility used for chrome, labels and eyebrows */
 .px { font-family: var(--font-px); }

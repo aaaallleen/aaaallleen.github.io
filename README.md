@@ -63,6 +63,7 @@ Some prose is hard-coded where it appears. Edit the page directly:
 | Post              | `src/pages/writing/[slug].astro`| Post layout and article typography             |
 | Contact           | `src/pages/contact.astro`       | Intro sentence                                 |
 | CV                | `src/pages/cv.astro`            | Viewer header and fallback text                |
+| Not found         | `src/pages/404.astro`           | Served by GitHub Pages for unknown URLs        |
 
 ### Look and feel
 
@@ -172,6 +173,11 @@ set `'b'` in `src/site.config.ts` for the wide image band + headline variant.
 ### Desktop interactions
 
 The window chrome is functional, not decorative. All of it lives in `src/scripts/desktop.ts`.
+
+- **A visit starts on the desktop.** The first arrival at the root shows the bare desktop with
+  three icons; double-click **About me** to open the site window on Home. Deep links to any other
+  page open their window directly, and Home links later in the visit show the window as usual.
+  Turn this off with `startOnDesktop: false` in `src/site.config.ts`; the icon label is `appName`.
 
 - **Red / yellow / green** close, minimize, and zoom the window. Minimize drops the window into a
   dock at the bottom; close hides it entirely. There are two windows, the site window and the

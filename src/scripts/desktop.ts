@@ -382,10 +382,11 @@ document.addEventListener('click', (e) => {
   if (tile) { restoreTile(tile.dataset.href ?? location.pathname); return; }
 
   // Desktop icons: click selects, a second click (or a double-click) opens — the
-  // Finder rhythm. Touch has no double-click culture, so a single tap opens.
+  // Finder rhythm. Touch has no double-click culture, so a single tap opens, and
+  // so does keyboard activation (Enter/Space arrive as a click with detail 0).
   const icon = target.closest<HTMLElement>('[data-icon]');
   if (icon) {
-    if (coarsePointer.matches || icon.getAttribute('aria-pressed') === 'true') openIcon(icon);
+    if (e.detail === 0 || coarsePointer.matches || icon.getAttribute('aria-pressed') === 'true') openIcon(icon);
     else { deselectIcons(); icon.setAttribute('aria-pressed', 'true'); }
     return;
   }
@@ -514,8 +515,17 @@ function init() {
   $$('[role="menu"]').forEach((m) => (m.hidden = true));
   const w = win();
   if (w) restorePosition(w);
-  removeTile(currentKind()); // this page's window is on screen; also renders the dock
-  recordVisit();
+  // First arrival of the visit at the root (decided pre-paint by the inline
+  // <head> script): start on the bare desktop with the window closed.
+  if (w && root.classList.contains('start-closed')) {
+    root.classList.remove('start-closed');
+    w.hidden = true;
+    document.body.dataset.window = 'closed';
+    writeNav(currentKind(), []);
+  }
+  session.set('visited', '1');
+  if (getState() === 'open') { removeTile(currentKind()); recordVisit(); } // this window is on screen
+  else renderDock();
   syncLabels();
   tick();
 }

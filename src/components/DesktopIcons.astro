@@ -12,7 +12,7 @@ import { url } from '../lib/url';
 ---
 <div class="desktop" data-desktop>
   <div class="icons">
-  <button class="icon" type="button" data-icon="app" data-href={url('/')} aria-pressed="false" aria-label={`${site.brand} — reopen window`}>
+  <button class="icon" type="button" data-icon="app" data-href={url('/')} aria-pressed="false" aria-label={`${site.appName} — open the site`}>
     <span class="art" aria-hidden="true">
       <svg viewBox="0 0 48 48" width="48" height="48">
         <rect x="3.5" y="6.5" width="41" height="35" fill="var(--win)" stroke="var(--ink)" />
@@ -30,7 +30,7 @@ import { url } from '../lib/url';
         <rect x="19" y="35" width="20" height="1.5" fill="var(--ink-3)" />
       </svg>
     </span>
-    <span class="label">{site.brand}</span>
+    <span class="label">{site.appName}</span>
   </button>
 
   <button class="icon" type="button" data-icon="file" data-href={url('/home/writing/')} aria-pressed="false" aria-label="Writing folder — open">

@@ -44,13 +44,18 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <!-- Same-site links are fetched and swapped in place, so the menu bar stays
          put and windows cross-fade instead of the page flashing white. -->
     <ClientRouter />
-    <script is:inline>
-      // Apply saved theme + zoom before first paint so there is no flash.
+    <script is:inline define:vars={{ homePath: url('/'), startOnDesktop: site.startOnDesktop }}>
+      // Runs once per real page load, before first paint (client-side swaps do not re-run it).
       (function () {
         try {
+          // Saved theme + zoom, so there is no flash.
           var t = localStorage.getItem('theme');
           if (t === 'light' || t === 'night') document.documentElement.setAttribute('data-theme', t);
           if (localStorage.getItem('zoom') === '1') document.documentElement.classList.add('is-zoomed');
+          // First arrival of a visit at the root: show the bare desktop, not the window.
+          var here = location.pathname.replace(/\/+$/, '') || '/';
+          var home = homePath.replace(/\/+$/, '') || '/';
+          if (startOnDesktop && here === home && !sessionStorage.getItem('visited')) document.documentElement.classList.add('start-closed');
         } catch (e) {}
       })();
     </script>

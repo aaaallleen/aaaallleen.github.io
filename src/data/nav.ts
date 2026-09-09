@@ -1,4 +1,4 @@
-export type SectionKey = 'home' | 'experience' | 'projects' | 'cv' | 'blog' | 'post' | 'contact';
+export type SectionKey = 'home' | 'experience' | 'projects' | 'cv' | 'blog' | 'post' | 'contact' | 'notfound';
 
 export interface NavItem {
   key: SectionKey;
@@ -36,4 +36,5 @@ export const titles: Record<SectionKey, string> = {
   blog: 'Writing',
   post: 'Writing — post',
   contact: 'Contact',
+  notfound: 'File not found',
 };

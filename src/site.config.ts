@@ -9,6 +9,10 @@ export type HeroLayout = 'a' | 'b';
 export const site = {
   name: 'Allen Lu',
   brand: 'aaaallleen.github.io',
+  /** Label of the site's app icon on the desktop and in the Home folder. */
+  appName: 'About me',
+  /** Start a fresh visit on the bare desktop (double-click "About me" to open the site). Deep links still open their page. */
+  startOnDesktop: true,
   year: 2026,
   email: 'chiaen119@gmail.com',
   location: 'San Diego, CA',

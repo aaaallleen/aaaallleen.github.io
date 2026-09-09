@@ -27,7 +27,7 @@ try {
 } catch {}
 
 const rows: FinderRow[] = [
-  { href: url('/'), name: site.brand, icon: 'app', kind: 'Application', kindSort: 'application', tooltip: 'Open the site', date: new Date() },
+  { href: url('/'), name: site.appName, icon: 'app', kind: 'Application', kindSort: 'application', tooltip: 'Open the site', date: new Date() },
   { href: url('/home/writing/'), name: 'Writing', icon: 'folder', kind: `Folder · ${posts.length} ${posts.length === 1 ? 'item' : 'items'}`, kindSort: 'folder', tooltip: 'Open the Writing folder', date: posts[0]?.data.date },
   { href: url('/cv/'), name: site.cv.label, icon: 'pdf', kind: `PDF document${cvSize}`, kindSort: 'pdf document', tooltip: 'Open the CV', date: cvModified },
 ];
