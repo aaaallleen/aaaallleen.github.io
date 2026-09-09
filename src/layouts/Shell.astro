@@ -18,11 +18,11 @@ import { ClientRouter } from 'astro:transitions';
 interface Props {
   /** Browser tab title. */
   tabTitle: string;
-  /** Shown on the dock tile when the window is minimized. */
-  windowTitle: string;
+  /** Kept for callers; the dock reads the title from the title bar itself. */
+  windowTitle?: string;
   description?: string;
 }
-const { tabTitle, windowTitle, description = site.description } = Astro.props;
+const { tabTitle, description = site.description } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
 <!doctype html>
@@ -58,7 +58,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   <body data-window="open">
     <MenuBar />
     <slot />
-    <Dock windowTitle={windowTitle} />
+    <Dock />
     <DesktopIcons />
     <AboutDialog />
     <script>

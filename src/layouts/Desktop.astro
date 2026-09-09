@@ -75,6 +75,7 @@ const pageTitle = tabTitle ?? (section === 'home' ? `${site.name} — ML Infrast
     .window { flex: 1; min-height: 0; display: flex; flex-direction: column; }
     .body { flex: 1; min-height: 0; }
     .content { overflow-y: auto; overscroll-behavior: contain; }
+    :global(body.has-dock) .desk { padding-bottom: 118px; } /* the dock reserves its strip */
   }
   .statusbar {
     display: flex; align-items: center; justify-content: space-between; gap: 12px;

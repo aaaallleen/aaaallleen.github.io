@@ -1,31 +1,38 @@
 ---
-/** Appears at the bottom of the screen while the window is minimized. */
-interface Props { windowTitle: string }
-const { windowTitle } = Astro.props;
+/**
+ * The dock: one tile per minimized window, for the whole visit. Tiles are
+ * rendered by the desktop script from sessionStorage (the template below is
+ * cloned per tile), so a window minimized on one page is still waiting in the
+ * dock after you open another. Clicking a tile brings that window back; if a
+ * window is on screen at that moment, it takes the vacated spot in the dock.
+ */
 ---
-<div class="dock" data-dock>
-  <button class="tile" type="button" data-action="restore" aria-label={`Restore window: ${windowTitle}`}>
-    <span class="thumb" aria-hidden="true">
-      <span class="thumb-bar"><i></i><i></i><i></i></span>
-      <span class="thumb-body"><span class="thumb-side"></span><span class="thumb-main"></span></span>
-    </span>
-    <span class="px tile-label">{windowTitle}</span>
-  </button>
+<div class="dock" data-dock aria-label="Dock" hidden>
+  <template>
+    <button class="tile" type="button" data-dock-restore>
+      <span class="thumb" aria-hidden="true">
+        <span class="thumb-bar"><i></i><i></i><i></i></span>
+        <span class="thumb-body"><span class="thumb-side"></span><span class="thumb-main"></span></span>
+      </span>
+      <span class="px tile-label"></span>
+    </button>
+  </template>
 </div>
 
 <style>
   .dock {
     position: fixed; left: 50%; bottom: 16px; z-index: 30;
     transform: translateX(-50%);
-    display: none;
-    gap: 10px;
+    display: flex;
+    gap: 6px;
     padding: 8px 10px;
+    max-width: calc(100vw - 24px);
+    overflow-x: auto;
     background: var(--chrome);
     border: 1px solid var(--line);
     box-shadow: var(--drop), var(--bev-out);
     animation: dock-in .28s cubic-bezier(.2,.7,.2,1);
   }
-  :global(body[data-window="minimized"]) .dock { display: flex; }
   @keyframes dock-in {
     from { transform: translate(-50%, 24px); opacity: 0; }
     to   { transform: translate(-50%, 0); opacity: 1; }
@@ -37,8 +44,10 @@ const { windowTitle } = Astro.props;
     background: none; border: 0;
     cursor: pointer;
     appearance: none;
+    flex: 0 0 auto;
   }
-  .tile:hover .thumb { transform: translateY(-2px); }
+  .tile:hover .thumb, .tile:focus-visible .thumb { transform: translateY(-2px); }
+  .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 0; }
   .thumb {
     display: block; width: 76px; height: 50px;
     background: var(--win);
@@ -66,5 +75,15 @@ const { windowTitle } = Astro.props;
       linear-gradient(var(--line-soft), var(--line-soft)) 6px 14px / 40px 1px no-repeat,
       linear-gradient(var(--line-soft), var(--line-soft)) 6px 18px / 36px 1px no-repeat;
   }
-  .tile-label { font-size: 9px; color: var(--ink-2); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  /* Folder windows: a list-like body with a wider sidebar */
+  .tile.folder .thumb-side { width: 24px; }
+  .tile.folder .thumb-main {
+    background:
+      linear-gradient(var(--line-soft), var(--line-soft)) 4px 6px / 40px 1px no-repeat,
+      linear-gradient(var(--line-soft), var(--line-soft)) 4px 12px / 40px 1px no-repeat,
+      linear-gradient(var(--line-soft), var(--line-soft)) 4px 18px / 40px 1px no-repeat,
+      linear-gradient(var(--line-soft), var(--line-soft)) 4px 24px / 40px 1px no-repeat,
+      linear-gradient(var(--line-soft), var(--line-soft)) 4px 30px / 40px 1px no-repeat;
+  }
+  .tile-label { font-size: 9px; color: var(--ink-2); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 </style>

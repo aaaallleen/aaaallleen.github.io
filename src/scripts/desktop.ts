@@ -108,6 +108,125 @@ const TO_CLOSED = (): Keyframe[] => [
 ];
 const FROM_CLOSED = () => [...TO_CLOSED()].reverse();
 
+/* ------------------------------------------------------------------- dock */
+
+/**
+ * There are exactly two windows: the site window ("site") and the folder
+ * window ("folder"). Pages are views inside them, so the dock holds at most
+ * one tile per window, remembering the page that window was left on. Only one
+ * window is ever on screen; opening the other one parks the current one here.
+ * Kind is derived from the URL: folder pages live under /home/.
+ */
+type Kind = 'site' | 'folder';
+interface Tile { kind: Kind; href: string; title: string }
+const DOCK_KEY = 'dock:tiles';
+const BASE = (import.meta.env.BASE_URL as string).replace(/\/+$/, '');
+const pathOf = (href: string) => new URL(href, location.href).pathname.replace(/\/+$/, '') || '/';
+function kindOf(href: string): Kind {
+  const p = pathOf(href);
+  const rel = BASE && p.startsWith(BASE) ? p.slice(BASE.length) : p;
+  return rel === '/home' || rel.startsWith('/home/') ? 'folder' : 'site';
+}
+const currentKind = (): Kind => (win()?.dataset.windowKind === 'folder' ? 'folder' : 'site');
+
+const readTiles = (): Tile[] => {
+  try {
+    const t = JSON.parse(session.get(DOCK_KEY) ?? '[]');
+    return Array.isArray(t) ? t.filter((x) => x && (x.kind === 'site' || x.kind === 'folder') && typeof x.href === 'string' && typeof x.title === 'string') : [];
+  } catch { return []; }
+};
+const writeTiles = (tiles: Tile[]) => session.set(DOCK_KEY, JSON.stringify(tiles));
+
+function currentTile(): Tile | null {
+  if (!win()) return null;
+  const title = $('[data-window-title]')?.textContent?.trim() || document.title;
+  return { kind: currentKind(), href: location.pathname, title };
+}
+
+function renderDock() {
+  const dock = $('[data-dock]');
+  const tpl = dock?.querySelector('template');
+  if (!dock || !tpl) return;
+  const tiles = readTiles();
+  dock.querySelectorAll('[data-dock-restore]').forEach((el) => el.remove());
+  for (const t of tiles) {
+    const node = tpl.content.firstElementChild!.cloneNode(true) as HTMLElement;
+    node.dataset.href = t.href;
+    node.dataset.kind = t.kind;
+    node.classList.toggle('folder', t.kind === 'folder');
+    node.setAttribute('aria-label', `Restore ${t.title}`);
+    node.querySelector('.tile-label')!.textContent = t.title;
+    dock.appendChild(node);
+  }
+  dock.hidden = tiles.length === 0;
+  document.body.classList.toggle('has-dock', tiles.length > 0);
+}
+
+/** Park a window in the dock (replacing that window's earlier tile, if any). */
+function addTile(tile: Tile) {
+  const tiles = readTiles().filter((t) => t.kind !== tile.kind);
+  tiles.push(tile);
+  writeTiles(tiles);
+  renderDock();
+}
+
+function removeTile(kind: Kind) {
+  writeTiles(readTiles().filter((t) => t.kind !== kind));
+  renderDock();
+}
+
+function restoreTile(href: string) {
+  if (samePage(href)) { void setState('open'); return; }
+  // Navigating parks whichever window is on screen (see astro:before-preparation)
+  // and the arriving page removes its own window's tile.
+  void navigate(href);
+}
+
+// Opening the other window while one is on screen parks the current one.
+// Same-window navigation (sidebar links, tag views, posts from the list) does not.
+// History traversal is "going back", not "opening a window", so it is left alone.
+document.addEventListener('astro:before-preparation', (e) => {
+  const ev = e as Event & { to?: URL; navigationType?: string };
+  if (!ev.to || ev.navigationType === 'traverse' || getState() !== 'open') return;
+  const cur = currentTile();
+  if (cur && kindOf(ev.to.href) !== cur.kind) addTile(cur);
+});
+
+/* ------------------------------------------------------- per-window history */
+
+/**
+ * Each window keeps its own trail of pages for the toolbar "< Back" button, so
+ * the site window's Back never lands in the folder window and vice versa. The
+ * browser's own back button is untouched. Arriving at a page already in the
+ * trail truncates to it (so browser back/forward and sidebar jumps stay sane);
+ * closing a window clears its trail.
+ */
+const navKey = (k: Kind) => `nav:${k}`;
+const readNav = (k: Kind): string[] => {
+  try { const a = JSON.parse(session.get(navKey(k)) ?? '[]'); return Array.isArray(a) ? a.filter((x) => typeof x === 'string') : []; } catch { return []; }
+};
+const writeNav = (k: Kind, trail: string[]) => session.set(navKey(k), JSON.stringify(trail));
+
+function recordVisit() {
+  const k = currentKind();
+  const here = pathOf(location.pathname);
+  const trail = readNav(k);
+  const i = trail.lastIndexOf(here);
+  if (i >= 0) trail.length = i + 1; else trail.push(here);
+  writeNav(k, trail);
+}
+
+function goBack(home: string) {
+  const k = currentKind();
+  const here = pathOf(location.pathname);
+  const trail = readNav(k);
+  const rest = trail[trail.length - 1] === here ? trail.slice(0, -1) : trail;
+  const target = rest[rest.length - 1] ?? home;
+  if (samePage(target)) return; // nowhere to go: leave the trail as it is
+  writeNav(k, rest);
+  void navigate(target);
+}
+
 let busy = false;
 
 async function setState(next: WindowState) {
@@ -124,17 +243,28 @@ async function setState(next: WindowState) {
     document.body.dataset.window = next;
     syncLabels();
     window.scrollTo({ top: 0 });
-    (next === 'minimized' ? $('[data-action="restore"]') : $('[data-icon="app"]'))?.focus();
+    if (next === 'minimized') {
+      const t = currentTile();
+      if (t) addTile(t);
+      $$<HTMLElement>('[data-dock-restore]').find((el) => el.dataset.kind === currentKind())?.focus();
+    } else {
+      removeTile(currentKind());
+      writeNav(currentKind(), []);
+      $('[data-icon="app"]')?.focus();
+    }
   } else if (next === 'open') {
     // Bring the window back from wherever it went.
     document.body.dataset.window = 'open';
     w.hidden = false;
+    removeTile(currentKind());
     syncLabels();
     await animate(w, prev === 'minimized' ? FROM_DOCK() : FROM_CLOSED(), prev === 'minimized' ? 320 : 180);
     w.focus({ preventScroll: true });
   } else {
     // minimized <-> closed: nothing to animate, just swap surfaces.
     document.body.dataset.window = next;
+    if (next === 'closed') { removeTile(currentKind()); writeNav(currentKind(), []); }
+    else { const t = currentTile(); if (t) addTile(t); }
     syncLabels();
   }
 
@@ -245,6 +375,10 @@ document.addEventListener('click', (e) => {
   }
   if (openMenu && (!target.closest('[data-menubar]') || target.closest('[role="menuitem"]'))) closeMenus();
 
+  // Dock tiles bring a minimized window back.
+  const tile = target.closest<HTMLElement>('[data-dock-restore]');
+  if (tile) { restoreTile(tile.dataset.href ?? location.pathname); return; }
+
   // Desktop icons: click selects, a second click (or a double-click) opens — the
   // Finder rhythm. Touch has no double-click culture, so a single tap opens.
   const icon = target.closest<HTMLElement>('[data-icon]');
@@ -266,14 +400,7 @@ document.addEventListener('click', (e) => {
     case 'zoom': setZoom(!zoomed()); break;
     case 'theme': setTheme(theme() === 'night' ? 'light' : 'night'); break;
     case 'about': $<HTMLDialogElement>('[data-about]')?.showModal(); break;
-    case 'back': {
-      // Toolbar "< Back": browser history when we came from this site, else Home.
-      let cameFromHere = false;
-      try { cameFromHere = !!document.referrer && new URL(document.referrer).origin === location.origin; } catch {}
-      if ((cameFromHere || history.state) && history.length > 1) history.back();
-      else void navigate(el.dataset.home ?? '/');
-      break;
-    }
+    case 'back': goBack(el.dataset.home ?? '/'); break; // this window's own trail
   }
 });
 
@@ -385,6 +512,8 @@ function init() {
   $$('[role="menu"]').forEach((m) => (m.hidden = true));
   const w = win();
   if (w) restorePosition(w);
+  removeTile(currentKind()); // this page's window is on screen; also renders the dock
+  recordVisit();
   syncLabels();
   tick();
 }
@@ -406,6 +535,7 @@ window.addEventListener('pageshow', (e) => {
     deselectIcons();
     syncLabels();
   }
+  removeTile(currentKind());
 });
 
 window.addEventListener('storage', (e) => {

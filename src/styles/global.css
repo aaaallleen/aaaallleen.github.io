@@ -65,6 +65,7 @@ img { display: block; max-width: 100%; }
 
 html.is-zoomed body { padding-bottom: 0; }
 @media (min-width: 761px) { body { padding-bottom: 0; } } /* the window is sized to the viewport; the page itself does not scroll */
+@media (max-width: 760px) { body.has-dock { padding-bottom: 130px; } } /* room for the dock under a scrolling page */
 
 /* Retro scrollbars inside window content (WebKit); Firefox gets themed colours. */
 [data-window-el] .content::-webkit-scrollbar { width: 14px; height: 14px; }
@@ -78,6 +79,11 @@ html.is-zoomed body { padding-bottom: 0; }
 @supports not selector(::-webkit-scrollbar) {
   [data-window-el] .content { scrollbar-color: var(--chrome-2) var(--panel); }
 }
+
+/* The window layer sits above the desktop icons (z 20) and below the dock (z 30) and menu bar (z 40).
+   The wrapper itself is transparent to clicks so uncovered desktop icons stay clickable. */
+.desk { position: relative; z-index: 25; pointer-events: none; }
+[data-window-el] { pointer-events: auto; }
 
 /* Zoom (green light): whichever window is on the page fills the viewport. */
 html.is-zoomed .desk { max-width: none; padding: 0; }

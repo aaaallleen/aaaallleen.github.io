@@ -1,9 +1,11 @@
 ---
 /**
- * The desktop behind the window, visible whenever the window is minimized or
- * closed: the site as an app icon (opens / restores the one window), a Writing
- * folder (opens the sortable post list) and the CV as a file (opens the CV
- * page). Centered on screen, like a tidy desktop.
+ * The desktop behind the window: the site as an app icon (opens / restores the
+ * one window), a Writing folder (opens the folder window) and the CV as a file
+ * (opens the CV page). On desktop widths it is always there beneath the window,
+ * so dragging the window aside uncovers it, like a real desktop. On phones the
+ * window is full width, so the desktop only shows once the window is minimized
+ * or closed.
  */
 import { site } from '../site.config';
 import { url } from '../lib/url';
@@ -69,14 +71,17 @@ import { url } from '../lib/url';
 
 <style>
   .desktop {
-    position: fixed; inset: 26px 0 0 0; z-index: 20;
-    display: none;
+    position: fixed; inset: 26px 0 0 0; z-index: 20; /* beneath the window (.desk is z 25), above the wallpaper */
+    display: flex;
     flex-direction: column; align-items: center; justify-content: center; gap: 18px;
     padding-bottom: 14vh; /* sit a little above true centre so the dock has room */
     animation: desk-in .22s ease-out;
   }
-  :global(body[data-window="closed"]) .desktop,
-  :global(body[data-window="minimized"]) .desktop { display: flex; }
+  @media (max-width: 760px) {
+    .desktop { display: none; }
+    :global(body[data-window="closed"]) .desktop,
+    :global(body[data-window="minimized"]) .desktop { display: flex; }
+  }
   @keyframes desk-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
   .icons { display: flex; align-items: flex-start; justify-content: center; flex-wrap: wrap; gap: 16px; }
 

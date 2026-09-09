@@ -174,13 +174,23 @@ set `'b'` in `src/site.config.ts` for the wide image band + headline variant.
 The window chrome is functional, not decorative. All of it lives in `src/scripts/desktop.ts`.
 
 - **Red / yellow / green** close, minimize, and zoom the window. Minimize drops the window into a
-  dock at the bottom (click the tile to restore); close hides it entirely. Either way the desktop
-  behind it shows three icons in the centre of the screen: the site, which restores the window if
-  it was minimized or relaunches it on Home if it was closed; a Writing folder, which opens as a
-  Finder-style folder window; and the CV, which opens the CV page. Zoom fills the viewport width.
+  dock at the bottom; close hides it entirely. There are two windows, the site window and the
+  folder window, and pages are views inside them, so the dock holds at most one tile per window
+  remembering the page it was left on. Opening the other window while one is on screen (from a
+  desktop icon, a Finder double-click, "Open as folder", or the File menu) parks the current one
+  in the dock; moving between pages of the same window never does. Clicking a tile brings that
+  window back to where you left it. The desktop behind the
+  window always holds three icons in the centre of the screen (drag the window aside to uncover
+  them; on phones they appear once the window is minimized or closed): the site, which restores
+  the window if it was minimized or relaunches it on Home if it was closed; a Writing folder, which
+  opens as a Finder-style folder window; and the CV, which opens the CV page. Zoom fills the
+  viewport width.
 - **Windows keep one size.** On desktop widths the window is sized to the viewport and its content
   scrolls inside, with the sidebar fixed, so switching between a long page and a short one never
   resizes the frame. Phones keep a flowing layout where the page itself scrolls.
+- **Each window has its own Back.** The toolbar "< Back" walks the pages visited in that window
+  only: the site window's Back never lands in the folder window and vice versa, and each falls
+  back to its own home (`/` or `/home/`). The browser's back button is untouched.
 - **Drag a window by its title bar** to move it (not when zoomed, and not on phones, where the
   window is full width). The position is kept for the rest of the visit; double-click the title
   bar to re-center. A window can never be dragged out of reach.
