@@ -89,6 +89,8 @@ html.is-zoomed body { padding-bottom: 0; }
    Like full screen on a Mac, the dock steps out of the way while zoomed. */
 html.is-zoomed .desk { max-width: none; padding: 0 !important; }
 html.is-zoomed [data-dock] { display: none !important; }
+/* ...but only while the zoomed window is actually on screen. Minimized or closed, the desktop is showing and the dock belongs there. */
+html.is-zoomed body:not([data-window="open"]) [data-dock]:not([hidden]) { display: flex !important; }
 html.is-zoomed [data-window-el] {
   display: flex; flex-direction: column;
   min-height: calc(100vh - 26px);
