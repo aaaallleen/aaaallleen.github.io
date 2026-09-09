@@ -53,7 +53,8 @@ Some prose is hard-coded where it appears. Edit the page directly:
 | Home              | `src/pages/index.astro`         | Section headings (ABOUT ME, RECENT WRITING, …) |
 | Experience        | `src/pages/experience.astro`    | Intro sentence, legend labels                  |
 | Projects          | `src/pages/projects.astro`      | Intro sentence                                 |
-| Writing           | `src/pages/writing/index.astro` | Intro sentence, table headers                  |
+| Writing           | `src/pages/writing/index.astro` | Intro sentence (list + tag bar are components) |
+| Tag pages         | `src/pages/writing/tag/[tag].astro` | Generated per tag                          |
 | Post              | `src/pages/writing/[slug].astro`| Post layout and article typography             |
 | Contact           | `src/pages/contact.astro`       | Intro sentence                                 |
 | CV                | `src/pages/cv.astro`            | Viewer header and fallback text                |
@@ -78,12 +79,12 @@ Every post follows `src/content/writing/_template.mdx`. The quickest way to star
 
 ```sh
 npm run new-post -- "45,000 kernel launches and one global flag"
-npm run new-post -- "Post title" --topic Compilation   # set the TOPIC column
+npm run new-post -- "Post title" --tags "poker, personal thoughts"
 npm run new-post -- "Post title" --md                  # plain Markdown, no <Figure>
 ```
 
 That copies the template to `src/content/writing/<slug>.mdx` with the title, today's date, and
-topic filled in. The file name is the URL (`/writing/<slug>/`). New posts start as `draft: true`,
+tags filled in. The file name is the URL (`/writing/<slug>/`). New posts start as `draft: true`,
 which means they show up in `npm run dev` but not on the live site; set it to `false` to publish.
 
 The frontmatter:
@@ -93,11 +94,19 @@ The frontmatter:
 title: "Post title"
 date: 2026-04-01
 dek: "One-line teaser shown in lists."
-topic: Profiling
+tags: ["GPU optimizing", "profiling"]
 minutes: 7        # optional, otherwise estimated from word count
 draft: false
 ---
 ```
+
+### Tags
+
+`tags` is a free-form list. Every tag automatically gets a page at `/writing/tag/<tag>/` listing
+the posts that carry it, and the Writing page shows a chip bar for filtering. Tags are matched
+case- and punctuation-insensitively, so "GPU optimizing" and "gpu-optimizing" are the same page;
+the spelling from the first post that uses a tag is the one displayed. Nothing else to maintain:
+add a new tag to a post and its page and chip appear on the next build.
 
 Conventions the template bakes in, so posts look like the rest of the site:
 

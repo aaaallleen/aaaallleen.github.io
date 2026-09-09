@@ -101,6 +101,28 @@ html.is-zoomed body { padding-bottom: 0; }
   box-shadow: var(--bev-out);
 }
 
+/* Tag chips: filter bar, list column, post footer. aria-current marks the active filter. */
+.tag-chip {
+  display: inline-block;
+  padding: 3px 8px;
+  background: var(--chrome);
+  color: var(--ink-2);
+  border: 1px solid var(--line);
+  box-shadow: var(--bev-out);
+  font-size: 10px;
+  line-height: 1.4;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.tag-chip.small { padding: 1px 6px; font-size: 9px; }
+.tag-chip:hover { background: var(--chrome-2); color: var(--ink); }
+.tag-chip[aria-current="page"] {
+  background: var(--sel);
+  color: var(--sel-ink);
+  border-color: var(--line);
+  box-shadow: inset 1px 1px 0 rgba(255,255,255,.3);
+}
+
 /* Toolbar / small pixel buttons: "< Back", "Home", "Download CV" */
 .tb {
   display: inline-block;

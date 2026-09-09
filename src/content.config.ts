@@ -14,8 +14,8 @@ const writing = defineCollection({
     date: z.coerce.date(),
     /** One-line teaser shown under the title in lists. */
     dek: z.string(),
-    /** Short category shown in the TOPIC column, e.g. "Profiling". */
-    topic: z.string(),
+    /** Free-form tags, e.g. ["GPU optimizing", "poker"]. Each gets a page at /writing/tag/<slug>/. */
+    tags: z.array(z.string().min(1)).default([]),
     /** Override the computed reading time (minutes). */
     minutes: z.number().int().positive().optional(),
     draft: z.boolean().default(false),

@@ -1,0 +1,33 @@
+---
+/**
+ * Chip bar at the top of Writing: "ALL" plus one chip per tag, with counts.
+ * Each chip is a real link to a tag page, so filtering works without JavaScript.
+ */
+import type { TagInfo } from '../lib/tags';
+import { url } from '../lib/url';
+
+interface Props {
+  tags: TagInfo[];
+  total: number;
+  /** Slug of the active tag, or undefined on the unfiltered list. */
+  active?: string;
+}
+const { tags, total, active } = Astro.props;
+---
+<nav class="tags" aria-label="Filter posts by tag">
+  <span class="px label">FILTER</span>
+  <a class="tag-chip" href={url('/writing/')} aria-current={active ? undefined : 'page'}>
+    All <span class="count">{total}</span>
+  </a>
+  {tags.map((t) => (
+    <a class="tag-chip" href={url(`/writing/tag/${t.slug}/`)} aria-current={t.slug === active ? 'page' : undefined}>
+      {t.name} <span class="count">{t.count}</span>
+    </a>
+  ))}
+</nav>
+
+<style>
+  .tags { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0 0 18px; }
+  .label { font-size: 9px; color: var(--ink-3); margin-right: 4px; }
+  .count { opacity: .6; font-size: 9px; margin-left: 2px; }
+</style>

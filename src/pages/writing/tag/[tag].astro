@@ -1,0 +1,39 @@
+---
+/** One page per tag: /writing/tag/<slug>/ — the Writing list filtered to that tag. */
+import Desktop from '../../../layouts/Desktop.astro';
+import TagFilter from '../../../components/TagFilter.astro';
+import PostList from '../../../components/PostList.astro';
+import { getPosts } from '../../../lib/posts';
+import { collectTags, postsWithTag, type TagInfo } from '../../../lib/tags';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return collectTags(posts).map((tag) => ({ params: { tag: tag.slug }, props: { tag } }));
+}
+
+const { tag } = Astro.props as { tag: TagInfo };
+const all = await getPosts();
+const tags = collectTags(all);
+const posts = postsWithTag(all, tag.slug);
+const noun = posts.length === 1 ? 'post' : 'posts';
+---
+<Desktop
+  section="blog"
+  windowTitle={`Writing — ${tag.name}`}
+  tabTitle={`${tag.name} · Writing · Allen Lu`}
+  description={`Posts by Allen Lu tagged “${tag.name}”.`}
+>
+  <div class="page">
+    <h1 class="section-title tight">WRITING</h1>
+    <p class="intro">Tagged <strong>{tag.name}</strong> &middot; {posts.length} {noun}.</p>
+    <TagFilter tags={tags} total={all.length} active={tag.slug} />
+    <PostList posts={posts} emptyText={`No posts tagged “${tag.name}” yet.`} />
+  </div>
+</Desktop>
+
+<style>
+  .page { padding: var(--pad-y-page) var(--pad-x); }
+  .tight { margin-bottom: 8px; }
+  .intro { font-size: 13px; color: var(--ink-2); margin: 0 0 22px; max-width: 60ch; }
+  .intro strong { color: var(--ink); }
+</style>
