@@ -340,11 +340,13 @@ const samePage = (href: string) =>
   new URL(href, location.href).pathname.replace(/\/+$/, '') === location.pathname.replace(/\/+$/, '');
 
 /**
- * Relaunching a closed app starts it fresh on Home; restoring a minimized one
- * keeps your place. If we are already on Home, just bring the window back.
+ * The app icon (and File > Reopen Window) means "open the site on Home",
+ * whatever is on screen or parked: a minimized folder stays in the dock, a
+ * minimized site window comes back showing Home. Already on Home? Just bring
+ * the window back.
  */
 function reopenWindow(home?: string) {
-  if (getState() === 'closed' && home && !samePage(home)) {
+  if (home && !samePage(home)) {
     void navigate(home);
     return;
   }
