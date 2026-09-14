@@ -2,8 +2,7 @@
 
 A static personal site built with [Astro](https://astro.build) and deployed to GitHub Pages.
 The visual design is a retro desktop window (menu bar, title bar, sidebar, status bar) with a
-day / night theme. It was mocked up in Claude Design; the original handoff bundle lives in
-[`project/`](project/) for reference and is not part of the build.
+day / night theme. It was mocked up in Claude Design.
 
 ## Run it locally
 
