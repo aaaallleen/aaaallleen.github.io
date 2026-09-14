@@ -17,7 +17,7 @@ export const site = {
   email: 'chiaen119@gmail.com',
   location: 'San Diego, CA',
   description:
-    'Allen Lu — ML infrastructure engineer at Ambient.AI. GPU inference systems, model compilation, and performance profiling.',
+    'Allen Lu — ML infrastructure engineer at Ambient.AI.',
 
   /** Default theme. Visitors can flip it in the menu bar; the choice persists in localStorage. */
   defaultTheme: 'light' as Theme,
@@ -35,14 +35,16 @@ export const site = {
   hero: {
     kicker: 'ML INFRASTRUCTURE ENGINEER · AMBIENT.AI',
     taglineA:
-      'Placeholder tagline goes here — a couple of sentences on what you build and why it matters. GPU inference systems, model compilation paths, and the profiling work that makes real-time computer vision cheap enough to run everywhere.',
+      'ML infrastructure engineer also with a degree in Arts and Design',
     headlineB: 'Allen Lu builds the layer between models and hardware.',
     taglineB:
-      'Placeholder tagline goes here — one paragraph on the work, the systems, and the numbers you like moving.',
+      'ML infrastructure engineer also with a degree in Arts and Design',
     statusB: 'SAN DIEGO, CA · AVAILABLE FOR CONVERSATION',
-    /** Drop a file in public/images/ and point `src` at it, e.g. 'images/portrait.jpg'. Leave undefined for the placeholder slot. */
-    portrait: { src: undefined as string | undefined, alt: 'Portrait of Allen Lu', caption: 'portrait.jpg', placeholder: 'Drop a portrait' },
-    band: { src: undefined as string | undefined, alt: '', placeholder: 'Drop a wide image — desk, rack, profiler capture' },
+    /** Drop a file in public/images/ and point `src` at it, e.g. 'images/portrait.jpg'. Leave undefined for the placeholder slot.
+     *  `position` picks which part survives the crop when the photo and the slot
+     *  disagree on shape: 'top', 'center', 'bottom', or a value like '50% 30%'. */
+    portrait: { src: "images/personal-photo.jpg" as string | undefined, alt: 'Portrait of Allen Lu', caption: 'personal-photo.jpg', placeholder: 'Drop a portrait', position: 'top' },
+    band: { src: undefined as string | undefined, alt: '', placeholder: 'Drop a wide image — desk, rack, profiler capture', position: 'center' },
   },
 
   about: {

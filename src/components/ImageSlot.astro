@@ -10,13 +10,16 @@ interface Props {
   alt?: string;
   placeholder?: string;
   fit?: 'cover' | 'contain';
+  /** Which part of the image survives the `cover` crop: 'top', 'center',
+   *  'bottom', or any CSS object-position value such as '50% 30%'. */
+  position?: string;
   loading?: 'lazy' | 'eager';
 }
-const { src, alt = '', placeholder = 'Drop an image', fit = 'cover', loading = 'lazy' } = Astro.props;
+const { src, alt = '', placeholder = 'Drop an image', fit = 'cover', position = 'center', loading = 'lazy' } = Astro.props;
 const resolved = src ? url(src) : undefined;
 ---
 {resolved ? (
-  <img class="fill" src={resolved} alt={alt} loading={loading} style={`object-fit:${fit}`} />
+  <img class="fill" src={resolved} alt={alt} loading={loading} style={`object-fit:${fit};object-position:${position}`} />
 ) : (
   <div class="fill empty" role="img" aria-label={alt || placeholder}>
     <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">

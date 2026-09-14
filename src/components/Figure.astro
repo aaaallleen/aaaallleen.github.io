@@ -12,13 +12,15 @@ interface Props {
   placeholder?: string;
   aspect?: string;
   fit?: 'cover' | 'contain';
+  /** See ImageSlot: which part of the image survives the crop. */
+  position?: string;
   loading?: 'lazy' | 'eager';
 }
-const { src, alt, caption, placeholder, aspect = '16/9', fit, loading } = Astro.props;
+const { src, alt, caption, placeholder, aspect = '16/9', fit, position, loading } = Astro.props;
 ---
 <figure class="figure">
   <div class="slot" style={`aspect-ratio:${aspect}`}>
-    <ImageSlot src={src} alt={alt} placeholder={placeholder} fit={fit} loading={loading} />
+    <ImageSlot src={src} alt={alt} placeholder={placeholder} fit={fit} position={position} loading={loading} />
   </div>
   {caption && <figcaption class="px">{caption}</figcaption>}
 </figure>
